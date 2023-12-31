@@ -20,5 +20,6 @@ logs
 
 # Local env files
 .env
+.docker_env
 .env.*
 !.env.example
