@@ -22,8 +22,8 @@ model Relation {
 }
 
 model Item {
-  id      Int        @id @default(autoincrement())
-  data    String
-  item    Relation[] @relation("Item")
-  related Relation[] @relation("Related")
+  id       Int        @id @default(autoincrement())
+  data     String
+  linkTo   Relation[] @relation("Item")
+  linkFrom Relation[] @relation("Related")
 }
