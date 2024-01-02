@@ -10,6 +10,7 @@ module.exports = {
     'vue/multi-word-component-names': 'off',
     'prettier/prettier': ['error', { configFile: '.prettierrc.js' }],
     semi: ['error', 'never'],
+    quotes: ['error', 'single'],
   },
   overrides: [
     {

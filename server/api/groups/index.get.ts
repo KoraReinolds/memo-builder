@@ -1,4 +1,4 @@
-import { getGroupsByUserId } from "~/db/groups"
+import { getGroupsByUserId } from '~/db/groups'
 
 export default defineEventHandler(async (event) => {
   const { id } = getQuery(event)
@@ -11,5 +11,4 @@ export default defineEventHandler(async (event) => {
   }
 
   return await getGroupsByUserId(+id)
-
 })
