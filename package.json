@@ -7,10 +7,25 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
+    "lint:prettier": "prettier --check .",
+    "lint": "npm run lint:js && npm run lint:prettier",
+    "lintfix": "prettier --write --list-different . && npm run lint:js --fix",
+    "lintfixs": "prettier --write --list-different .\\pages\\index.vue"
   },
   "devDependencies": {
+    "@nuxtjs/eslint-module": "^4.1.0",
     "@types/node": "^20.10.6",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-unicorn": "^50.0.1",
+    "eslint-plugin-vue": "^9.19.2",
     "nuxt": "^3.9.0",
     "prisma": "^5.7.1",
     "ts-node": "^10.9.2",
@@ -19,6 +34,10 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.1"
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@prisma/client": "^5.7.1",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "prettier": "^3.1.1"
   }
 }
