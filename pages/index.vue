@@ -1,10 +1,8 @@
 <template>
-  <div
-    v-for="group in groups"
-    :key="group.id"
-  >
-    {{ group.name }}
-  </div>
+  <GroupList
+    v-if="groups"
+    :groups="groups"
+  />
   <div>
     <input
       v-model="newName"
