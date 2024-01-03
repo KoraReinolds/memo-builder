@@ -20,9 +20,13 @@
 <script setup lang="ts">
   import type { IList } from '~/interfaces/IGroup'
 
+  const router = useRouter()
   const newName = ref('')
   const groups = ref(await getGroups())
-  const openedGroup = ref<IList[] | null>(null)
+  const groupId = router.currentRoute.value.params.id
+  const openedGroup = ref<IList[] | null>(
+    groupId ? await getGroupById(+groupId) : null,
+  )
   const userId = 1
 
   async function getGroups() {
@@ -51,18 +55,21 @@
   }
 
   async function openGroup(id: number) {
+    openedGroup.value = await getGroupById(id)
+  }
+
+  async function getGroupById(id: number) {
     const { data, error } = await useFetch(`/api/groups/${id}`)
 
     if (error.value) {
       console.warn('openGroup error')
     }
 
-    const router = useRouter()
     router.push({
       name: 'main-id',
       params: { id },
     })
 
-    openedGroup.value = data.value
+    return data.value
   }
 </script>
