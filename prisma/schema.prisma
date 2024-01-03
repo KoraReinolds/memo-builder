@@ -11,7 +11,7 @@ model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
   name  String?
-  Group Group[]
+  group Group[]
 }
 
 model Relation {
@@ -27,7 +27,7 @@ model Group {
   name   String
   userId Int
   user   User   @relation(fields: [userId], references: [id])
-  List   List[]
+  list   List[]
 }
 
 model List {
@@ -35,7 +35,7 @@ model List {
   name    String
   groupId Int
   group   Group  @relation(fields: [groupId], references: [id])
-  Item    Item[]
+  items   Item[]
 }
 
 model Item {
