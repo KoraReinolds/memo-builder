@@ -2,6 +2,7 @@
   <GroupList
     v-if="groups"
     :groups="groups"
+    @open="openGroup"
   />
   <div>
     <input
@@ -10,12 +11,17 @@
     > 
     <button @click="createNewGroup(newName)">Create</button>
   </div>
+  <NuxtPage
+    :list="openedGroup"
+  />
 </template>
 
 <script setup lang="ts">
+import type { IList } from '~/interfaces/IGroup'
+
   const newName = ref('')
   const groups = ref(await getGroups())
-
+  const openedGroup = ref<IList[] | null>(null)
   const userId = 1
 
   async function getGroups() {
@@ -45,6 +51,25 @@
 
     groups.value = await getGroups()
     newName.value = ''
+  }
+  
+  async function openGroup(id: number) {
+    const { data, error } = await useFetch(
+      `/api/groups/${id}`,
+    )
+
+    if (error.value) {
+      console.warn('openGroup error')
+    }
+
+    const router = useRouter()
+    router.push({
+      name: 'main-id',
+      params: { id },
+    })
+
+    openedGroup.value = data.value
+
   }
 
 </script>

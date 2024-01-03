@@ -3,7 +3,11 @@
     v-for="group in groups"
     :key="group.id"
   >
-    {{ group.name }}
+    <span
+      @click="$emit('open', group.id)"
+    >
+      {{ group.name }}
+    </span>
   </div>
 </template>
 
@@ -17,4 +21,9 @@ defineProps({
     required: true,
   }
 })
+
+defineEmits<{
+  open: [number]
+}>()
+
 </script>

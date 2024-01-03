@@ -3,4 +3,9 @@ interface IGroup {
   name: string
 }
 
-export type { IGroup }
+interface IList {
+  id: number
+  name: string
+}
+
+export type { IGroup, IList }
