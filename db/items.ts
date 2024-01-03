@@ -8,12 +8,7 @@ async function getItemsOfGroup(groupId: number) {
       groupId,
     },
     select: {
-      items: {
-        select: {
-          id: true,
-          data: true,
-        },
-      },
+      items: true,
     },
   })
 

@@ -8,4 +8,10 @@ interface IList {
   name: string
 }
 
-export type { IGroup, IList }
+interface IItem {
+  id: number
+  data: string
+  listId: number
+}
+
+export type { IGroup, IList, IItem }
