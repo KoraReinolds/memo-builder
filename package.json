@@ -12,10 +12,11 @@
     "lint:prettier": "prettier --check .",
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different . && npm run lint:js --fix",
-    "lintfixs": "prettier --write --list-different .\\pages\\index.vue"
+    "lintfixs": "prettier --write --list-different .\\pages\\main.vue"
   },
   "devDependencies": {
     "@nuxtjs/eslint-module": "^4.1.0",
+    "@nuxtjs/tailwindcss": "^6.10.3",
     "@types/node": "^20.10.6",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -27,6 +28,8 @@
     "eslint-plugin-unicorn": "^50.0.1",
     "eslint-plugin-vue": "^9.19.2",
     "nuxt": "^3.9.0",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.10",
     "prisma": "^5.7.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
@@ -37,7 +40,6 @@
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@prisma/client": "^5.7.1",
     "@typescript-eslint/parser": "^6.17.0",
-    "eslint-plugin-prettier": "^5.1.2",
-    "prettier": "^3.1.1"
+    "eslint-plugin-prettier": "^5.1.2"
   }
 }

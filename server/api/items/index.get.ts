@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -10,15 +10,15 @@ async function getItems() {
           relatedId: true,
         },
       },
-    }
+    },
   })
 
-  return items.map(item => ({
+  return items.map((item) => ({
     ...item,
-    linkTo: item.linkTo.map(rel => rel.relatedId)
+    linkTo: item.linkTo.map((rel) => rel.relatedId),
   }))
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   return await getItems()
 })

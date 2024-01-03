@@ -12,38 +12,4 @@ module.exports = {
     semi: ['error', 'never'],
     quotes: ['error', 'single'],
   },
-  overrides: [
-    {
-      files: ['*.vue'],
-      rules: {
-        'prettier/prettier': 'off',
-        'vue/max-attributes-per-line': [
-          'error',
-          {
-            singleline: {
-              max: 1,
-            },
-            multiline: {
-              max: 1,
-            },
-          },
-        ],
-      },
-    },
-    // {
-    //   files: ['**/*.vue'],
-    //   rules: {
-    //     'vue/max-attributes-per-line': [
-    //       'error',
-    //       {
-    //         singleline: 1,
-    //         multiline: {
-    //           max: 1,
-    //           allowFirstLine: false,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // },
-  ],
 }

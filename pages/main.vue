@@ -8,16 +8,17 @@
     <input
       v-model="newName"
       type="text"
-    > 
+    />
     <button @click="createNewGroup(newName)">Create</button>
   </div>
   <NuxtPage
+    v-if="openedGroup"
     :list="openedGroup"
   />
 </template>
 
 <script setup lang="ts">
-import type { IList } from '~/interfaces/IGroup'
+  import type { IList } from '~/interfaces/IGroup'
 
   const newName = ref('')
   const groups = ref(await getGroups())
@@ -32,18 +33,14 @@ import type { IList } from '~/interfaces/IGroup'
     }
 
     return data.value
-
   }
 
   async function createNewGroup(name: string) {
-    const { error } = await useFetch(
-      '/api/groups',
-      {
-        method: 'put',
-        body: { name },
-        pick: ['name', 'id'],
-      }
-    )
+    const { error } = await useFetch('/api/groups', {
+      method: 'put',
+      body: { name },
+      pick: ['name', 'id'],
+    })
 
     if (error.value) {
       console.warn('createNewGroup error')
@@ -52,11 +49,9 @@ import type { IList } from '~/interfaces/IGroup'
     groups.value = await getGroups()
     newName.value = ''
   }
-  
+
   async function openGroup(id: number) {
-    const { data, error } = await useFetch(
-      `/api/groups/${id}`,
-    )
+    const { data, error } = await useFetch(`/api/groups/${id}`)
 
     if (error.value) {
       console.warn('openGroup error')
@@ -69,7 +64,5 @@ import type { IList } from '~/interfaces/IGroup'
     })
 
     openedGroup.value = data.value
-
   }
-
 </script>
