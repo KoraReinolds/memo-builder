@@ -3,6 +3,7 @@
     v-if="openedGroup && openedItems"
     :list="openedGroup"
     :items="openedItems"
+    @new-item="addNewItem"
   />
 </template>
 
@@ -37,5 +38,20 @@
 
     console.log(data.value)
     return data.value
+  }
+
+  async function addNewItem(listId: number, data: string) {
+    const { data: newItem, error } = await useFetch('/api/items', {
+      method: 'put',
+      body: { listId, data },
+    })
+
+    if (error.value) {
+      console.warn('addNewItem error')
+    }
+
+    if (newItem.value) {
+      openedItems.value?.push(newItem.value)
+    }
   }
 </script>

@@ -15,4 +15,17 @@ async function getItemsOfGroup(groupId: number) {
   return items.flatMap((entry) => entry.items)
 }
 
-export { getItemsOfGroup }
+type AddNewItemParams = {
+  listId: number
+  data: string
+}
+
+async function addNewItemToList(data: AddNewItemParams) {
+  const item = await prisma.item.create({
+    data,
+  })
+
+  return item
+}
+
+export { getItemsOfGroup, addNewItemToList }

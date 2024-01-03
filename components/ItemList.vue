@@ -10,6 +10,12 @@
       >
         {{ item.data }}
       </div>
+      <input
+        v-model="newItem"
+        type="text"
+        placeholder="New Item"
+      />
+      <button @click="addNewItem">Add Item</button>
     </div>
   </div>
 </template>
@@ -28,4 +34,15 @@
       required: true,
     },
   })
+
+  const emits = defineEmits<{
+    newItem: [name: string]
+  }>()
+
+  const newItem = ref('')
+
+  function addNewItem() {
+    emits('newItem', newItem.value)
+    newItem.value = ''
+  }
 </script>

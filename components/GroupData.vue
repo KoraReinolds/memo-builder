@@ -7,6 +7,7 @@
       <ItemList
         :name="itemList.name"
         :items="filteredItems(items, itemList.id)"
+        @new-item="(name) => $emit('newItem', itemList.id, name)"
       />
     </div>
   </div>
@@ -27,6 +28,10 @@
       required: true,
     },
   })
+
+  defineEmits<{
+    newItem: [id: number, name: string]
+  }>()
 
   function filteredItems(items: IItem[], id: number) {
     return items.filter((entry) => entry.listId === id)
