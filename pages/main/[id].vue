@@ -1,38 +1,41 @@
 <template>
-  <div class="flex justify-between">
-    <div
-      v-for="itemList in list"
-      :key="itemList.id"
-    >
-      <span>
-        {{ itemList.name }}
-      </span>
-      <div
-        v-for="item in filteredItems(items, itemList.id)"
-        :key="item.id"
-      >
-        {{ item.data }}
-      </div>
-    </div>
-  </div>
+  <GroupData
+    v-if="openedGroup && openedItems"
+    :list="openedGroup"
+    :items="openedItems"
+  />
 </template>
 
 <script setup lang="ts">
-  import type { PropType } from 'vue'
   import type { IItem, IList } from '~/interfaces/IGroup'
 
-  defineProps({
-    list: {
-      type: Object as PropType<IList[]>,
-      required: true,
-    },
-    items: {
-      type: Object as PropType<IItem[]>,
-      required: true,
-    },
-  })
+  const router = useRouter()
+  const groupId = router.currentRoute.value.params.id
+  const openedGroup = ref<IList[] | null>(
+    groupId ? await getGroupById(+groupId) : null,
+  )
+  const openedItems = ref<IItem[] | null>(
+    groupId ? await getItemsById(+groupId) : null,
+  )
 
-  function filteredItems(items: IItem[], id: number) {
-    return items.filter((entry) => entry.listId === id)
+  async function getGroupById(id: number) {
+    const { data, error } = await useFetch(`/api/groups/${id}`)
+
+    if (error.value) {
+      console.warn('getGroupById error')
+    }
+
+    return data.value
+  }
+
+  async function getItemsById(id: number) {
+    const { data, error } = await useFetch(`/api/items/${id}`)
+
+    if (error.value) {
+      console.warn('getItemsById error')
+    }
+
+    console.log(data.value)
+    return data.value
   }
 </script>
