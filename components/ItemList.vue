@@ -7,8 +7,10 @@
       <div
         v-for="item in items"
         :key="item.id"
+        :class="{ 'bg-lime-500': selectedItems.some((id) => id === item.id) }"
+        @click="$emit('selectItem', item.id)"
       >
-        {{ item.data }}
+        {{ item.data }} = {{ item.id }}= {{ selectedItems }}
       </div>
       <input
         v-model="newItem"
@@ -29,6 +31,10 @@
       type: String,
       required: true,
     },
+    selectedItems: {
+      type: Array as PropType<number[]>,
+      required: true,
+    },
     items: {
       type: Object as PropType<IItem[]>,
       required: true,
@@ -37,6 +43,7 @@
 
   const emits = defineEmits<{
     newItem: [name: string]
+    selectItem: [id: number]
   }>()
 
   const newItem = ref('')

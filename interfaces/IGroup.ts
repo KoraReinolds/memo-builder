@@ -14,4 +14,6 @@ interface IItem {
   listId: number
 }
 
-export type { IGroup, IList, IItem }
+type Links = Map<number, number[]>
+
+export type { IGroup, IList, IItem, Links }

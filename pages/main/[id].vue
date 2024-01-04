@@ -1,14 +1,15 @@
 <template>
   <GroupData
-    v-if="openedGroup && openedItems"
+    v-if="openedGroup && openedItems && openedLinks"
     :list="openedGroup"
     :items="openedItems"
+    :links="openedLinks"
     @new-item="addNewItem"
   />
 </template>
 
 <script setup lang="ts">
-  import type { IItem, IList } from '~/interfaces/IGroup'
+  import type { IItem, IList, Links } from '~/interfaces/IGroup'
 
   const router = useRouter()
   const groupId = router.currentRoute.value.params.id
@@ -18,6 +19,36 @@
   const openedItems = ref<IItem[] | null>(
     groupId ? await getItemsById(+groupId) : null,
   )
+  const openedLinks = ref<Links | null>(
+    groupId ? await getLinksById(+groupId) : null,
+  )
+
+  async function getLinksById(id: number) {
+    const { data, error } = await useFetch(`/api/links?groupId=${id}`)
+
+    console.log(data.value, error.value)
+    if (error.value) {
+      console.warn('getLinksById error')
+    }
+
+    if (data.value) {
+      const entries = data.value.map((entry) => [entry.itemId, entry.relatedId])
+      const res: Links = new Map()
+      const addEl = (key: number, val: number) => {
+        const link = res.get(key)
+        if (link) link.push(val)
+        else res.set(key, [val])
+      }
+      entries.forEach(([first, second]) => {
+        addEl(first, second)
+        addEl(second, first)
+      })
+      console.log(res)
+      return res
+    }
+
+    return null
+  }
 
   async function getGroupById(id: number) {
     const { data, error } = await useFetch(`/api/groups/${id}`)
