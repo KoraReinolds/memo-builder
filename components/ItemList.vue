@@ -7,10 +7,17 @@
       <div
         v-for="item in items"
         :key="item.id"
-        :class="{ 'bg-lime-500': selectedItems.some((id) => id === item.id) }"
-        @click="$emit('selectItem', item.id)"
+        :class="{ 'bg-lime-500': isHighlight(item.id) }"
       >
-        {{ item.data }} = {{ item.id }}= {{ selectedItems }}
+        <label :for="`${item.id}`">
+          {{ item.data }}
+        </label>
+        <input
+          :id="`${item.id}`"
+          v-model="selected[item.id]"
+          type="checkbox"
+          @change="$emit('selectItem', item.id)"
+        />
       </div>
       <input
         v-model="newItem"
@@ -26,7 +33,7 @@
   import type { PropType } from 'vue'
   import type { IItem } from '~/interfaces/IGroup'
 
-  defineProps({
+  const props = defineProps({
     name: {
       type: String,
       required: true,
@@ -39,14 +46,32 @@
       type: Object as PropType<IItem[]>,
       required: true,
     },
+    modelValue: {
+      type: Object as PropType<Record<string, boolean>>,
+      required: true,
+    },
   })
 
   const emits = defineEmits<{
     newItem: [name: string]
     selectItem: [id: number]
+    'update:modelValue': [selected: Record<string, boolean>]
   }>()
 
+  const selected = computed({
+    get() {
+      return props.modelValue
+    },
+    set(value) {
+      emits('update:modelValue', value)
+    },
+  })
+
   const newItem = ref('')
+
+  function isHighlight(id: number) {
+    return +props.selectedItems.includes(id) ^ +selected.value[id]
+  }
 
   function addNewItem() {
     emits('newItem', newItem.value)
