@@ -26,4 +26,15 @@ async function getLinks(groupId: number) {
   return items.flatMap((entry) => entry.linkTo)
 }
 
-export { getLinks }
+async function saveNewLinks(data: [number, number][]) {
+  const links = await prisma.relation.createMany({
+    data: data.map((pair) => ({
+      itemId: pair[0],
+      relatedId: pair[1],
+    })),
+  })
+
+  return links
+}
+
+export { getLinks, saveNewLinks }
