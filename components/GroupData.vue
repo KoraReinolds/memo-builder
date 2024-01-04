@@ -1,4 +1,5 @@
 <template>
+  <button @click="saveChanges">Save</button>
   <div class="flex justify-between">
     <div
       v-for="itemList in list"
@@ -36,13 +37,35 @@
     },
   })
 
-  defineEmits<{
+  const emits = defineEmits<{
     newItem: [id: number, name: string]
+    addLinks: [data: [number, number][]]
   }>()
+
+  function saveChanges() {
+    if (!selectedItem.value) return
+
+    const groupedLinks = Object.entries(linkModeSelected.value).filter(
+      (entry) => +entry[0] !== selectedItem.value?.listId,
+    )
+    const links = groupedLinks
+      .map((entry) => Object.keys(entry[1]))
+      .flat()
+      .map((str) => +str)
+    const newLinks = links.filter((id) => !selectedItems.value.includes(+id))
+    const linksPairs: [number, number][] = []
+    const rootId = selectedItem.value.id
+    newLinks.forEach((id) => {
+      linksPairs.push([id, rootId])
+      linksPairs.push([rootId, id])
+    })
+    emits('addLinks', linksPairs)
+    mode.value = 'default'
+  }
 
   function finishLinksMode() {
     linkModeSelected.value = getLinkModeSelectedInitialValue()
-    selectedItem.value = null
+    selectedItemId.value = null
   }
 
   function getLinkModeSelectedInitialValue() {
@@ -56,11 +79,11 @@
   const mode = ref<'default' | 'links'>('default')
 
   function selectItem(itemId: number) {
-    if (itemId === selectedItem.value) {
+    if (itemId === selectedItemId.value) {
       mode.value = 'default'
-    } else if (selectedItem.value === null) {
+    } else if (selectedItemId.value === null) {
       mode.value = 'links'
-      selectedItem.value = itemId
+      selectedItemId.value = itemId
     } else {
       console.log('changeLinks')
     }
@@ -76,9 +99,12 @@
     return items.filter((entry) => entry.listId === id)
   }
 
-  const selectedItem = ref<number | null>(null)
+  const selectedItemId = ref<number | null>(null)
+  const selectedItem = computed(() => {
+    return props.items.find((item) => item.id === selectedItemId.value)
+  })
   const selectedItems = computed(() => {
-    if (!selectedItem.value) return []
-    else return props.links.get(selectedItem.value) || []
+    if (!selectedItemId.value) return []
+    else return props.links.get(selectedItemId.value) || []
   })
 </script>

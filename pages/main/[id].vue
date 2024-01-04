@@ -5,6 +5,7 @@
     :items="openedItems"
     :links="openedLinks"
     @new-item="addNewItem"
+    @add-links="saveNewLinks"
   />
 </template>
 
@@ -19,35 +20,55 @@
   const openedItems = ref<IItem[] | null>(
     groupId ? await getItemsById(+groupId) : null,
   )
-  const openedLinks = ref<Links | null>(
-    groupId ? await getLinksById(+groupId) : null,
+  const links = ref<[number, number][]>(
+    groupId ? await getLinksById(+groupId) : [],
   )
+
+  const openedLinks = computed(() => {
+    const res: Links = new Map()
+    const addEl = (key: number, val: number) => {
+      const link = res.get(key)
+      if (link) link.push(val)
+      else res.set(key, [val])
+    }
+    links.value.forEach(([first, second]) => {
+      addEl(first, second)
+      addEl(second, first)
+    })
+    return res
+  })
+
+  async function saveNewLinks(newLinks: [number, number][]) {
+    const { data, error } = await useFetch('/api/links', {
+      method: 'put',
+      body: {
+        links,
+      },
+    })
+
+    if (error.value) {
+      console.warn('saveNewLinks error')
+    }
+
+    newLinks.forEach((newLinkPair) => links.value.push(newLinkPair))
+  }
 
   async function getLinksById(id: number) {
     const { data, error } = await useFetch(`/api/links?groupId=${id}`)
 
-    console.log(data.value, error.value)
     if (error.value) {
       console.warn('getLinksById error')
     }
 
     if (data.value) {
-      const entries = data.value.map((entry) => [entry.itemId, entry.relatedId])
-      const res: Links = new Map()
-      const addEl = (key: number, val: number) => {
-        const link = res.get(key)
-        if (link) link.push(val)
-        else res.set(key, [val])
-      }
-      entries.forEach(([first, second]) => {
-        addEl(first, second)
-        addEl(second, first)
-      })
-      console.log(res)
-      return res
+      const entries: [number, number][] = data.value.map((entry) => [
+        entry.itemId,
+        entry.relatedId,
+      ])
+      return entries
     }
 
-    return null
+    return []
   }
 
   async function getGroupById(id: number) {
