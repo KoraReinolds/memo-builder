@@ -1,7 +1,7 @@
 <template>
   <GroupData
-    v-if="openedGroup && openedItems && openedLinks"
-    :list="openedGroup"
+    v-if="openedLists && openedItems && openedLinks"
+    :list="openedLists"
     :items="openedItems"
     :links="openedLinks"
     @new-item="addNewItem"
@@ -15,8 +15,8 @@
 
   const router = useRouter()
   const groupId = router.currentRoute.value.params.id
-  const openedGroup = ref<IList[] | null>(
-    groupId ? await getGroupById(+groupId) : null,
+  const openedLists = ref<IList[] | null>(
+    groupId ? await getListsById(+groupId) : null,
   )
   const openedItems = ref<IItem[] | null>(
     groupId ? await getItemsById(+groupId) : null,
@@ -93,11 +93,11 @@
     return []
   }
 
-  async function getGroupById(id: number) {
-    const { data, error } = await useFetch(`/api/groups/${id}`)
+  async function getListsById(id: number) {
+    const { data, error } = await useFetch(`/api/lists?groupId=${id}`)
 
     if (error.value) {
-      console.warn('getGroupById error')
+      console.warn('getListsById error')
     }
 
     return data.value
@@ -110,7 +110,6 @@
       console.warn('getItemsById error')
     }
 
-    console.log(data.value)
     return data.value
   }
 

@@ -1,14 +1,14 @@
 import { getListsOfGroup } from '~/db/lists'
 
 export default defineEventHandler(async (event) => {
-  const id = event.context.params?.id
+  const { groupId } = getQuery(event)
 
-  if (!id || !Number.isInteger(+id)) {
+  if (!groupId || !Number.isInteger(+groupId)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'groupId is not integer or defined',
     })
   }
 
-  return await getListsOfGroup(+id)
+  return await getListsOfGroup(+groupId)
 })
