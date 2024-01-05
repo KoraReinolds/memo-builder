@@ -16,6 +16,16 @@ async function getGroupsByUserId(id: number) {
   return groups
 }
 
+async function getGroupByName(name: string) {
+  const group = await prisma.group.findFirst({
+    where: {
+      name,
+    },
+  })
+
+  return group
+}
+
 type CreateGroupParams = {
   userId: number
   name: string
@@ -27,4 +37,4 @@ async function createGroup(data: CreateGroupParams) {
   return group
 }
 
-export { getGroupsByUserId, createGroup }
+export { getGroupsByUserId, createGroup, getGroupByName }
