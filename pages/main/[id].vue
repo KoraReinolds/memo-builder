@@ -125,7 +125,7 @@
     }
 
     if (newList.value) {
-      openedLists.value?.push(newList.value)
+      openedLists.value = [...(openedLists.value || []), newList.value]
     }
   }
 

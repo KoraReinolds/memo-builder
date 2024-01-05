@@ -6,6 +6,7 @@
       :key="itemList.id"
     >
       <ItemList
+        v-if="linkModeSelected[itemList.id]"
         v-model="linkModeSelected[itemList.id]"
         :name="itemList.name"
         :items="filteredItems(items, itemList.id)"
@@ -50,6 +51,13 @@
     addLinks: [data: [number, number][]]
     deleteLinks: [data: [number, number][]]
   }>()
+
+  watch(
+    () => props.list,
+    () => {
+      linkModeSelected.value = getLinkModeSelectedInitialValue()
+    },
+  )
 
   const newListName = ref()
 
