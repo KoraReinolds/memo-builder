@@ -7,13 +7,20 @@ async function getListsOfGroup(groupId: number) {
     where: {
       groupId,
     },
-    select: {
-      id: true,
-      name: true,
-    },
   })
 
   return lists
 }
 
-export { getListsOfGroup }
+type AddListParams = {
+  groupId: number
+  name: string
+}
+
+async function createList(data: AddListParams) {
+  const list = await prisma.list.create({ data })
+
+  return list
+}
+
+export { createList, getListsOfGroup }
