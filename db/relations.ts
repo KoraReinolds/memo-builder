@@ -27,14 +27,27 @@ async function getLinks(groupId: number) {
 }
 
 async function saveNewLinks(data: [number, number][]) {
-  const links = await prisma.relation.createMany({
+  const count = await prisma.relation.createMany({
     data: data.map((pair) => ({
       itemId: pair[0],
       relatedId: pair[1],
     })),
   })
 
-  return links
+  return count
 }
 
-export { getLinks, saveNewLinks }
+async function deleteLinks(data: [number, number][]) {
+  const count = await prisma.relation.deleteMany({
+    where: {
+      OR: data.map((pair) => ({
+        itemId: pair[0],
+        relatedId: pair[1],
+      })),
+    },
+  })
+
+  return count
+}
+
+export { getLinks, saveNewLinks, deleteLinks }
