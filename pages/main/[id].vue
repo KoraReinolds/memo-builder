@@ -6,6 +6,7 @@
     :links="openedLinks"
     @new-item="addNewItem"
     @add-links="saveNewLinks"
+    @delete-links="deleteLinks"
   />
 </template>
 
@@ -38,11 +39,32 @@
     return res
   })
 
+  async function deleteLinks(deletedLinks: [number, number][]) {
+    const { data, error } = await useFetch('/api/links', {
+      method: 'delete',
+      body: {
+        links: deletedLinks,
+      },
+    })
+
+    if (error.value) {
+      console.warn('deleteLinks error')
+    }
+
+    links.value = links.value.filter(
+      (linkPair) =>
+        deletedLinks.find(
+          (deletedLinkPair) =>
+            linkPair.toString() === deletedLinkPair.toString(),
+        ) === undefined,
+    )
+  }
+
   async function saveNewLinks(newLinks: [number, number][]) {
     const { data, error } = await useFetch('/api/links', {
       method: 'put',
       body: {
-        links,
+        links: newLinks,
       },
     })
 

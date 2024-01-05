@@ -40,6 +40,7 @@
   const emits = defineEmits<{
     newItem: [id: number, name: string]
     addLinks: [data: [number, number][]]
+    deleteLinks: [data: [number, number][]]
   }>()
 
   function saveChanges() {
@@ -52,14 +53,24 @@
       .map((entry) => Object.keys(entry[1]))
       .flat()
       .map((str) => +str)
+
+    function idToPairs(rootId: number, listId: number[]) {
+      const linksPairs: [number, number][] = []
+      listId.forEach((id) => {
+        linksPairs.push([id, rootId])
+        linksPairs.push([rootId, id])
+      })
+      return linksPairs
+    }
+
     const newLinks = links.filter((id) => !selectedItems.value.includes(+id))
-    const linksPairs: [number, number][] = []
-    const rootId = selectedItem.value.id
-    newLinks.forEach((id) => {
-      linksPairs.push([id, rootId])
-      linksPairs.push([rootId, id])
-    })
-    emits('addLinks', linksPairs)
+    const newLinksPairs = idToPairs(selectedItem.value.id, newLinks)
+    if (newLinksPairs.length) emits('addLinks', newLinksPairs)
+
+    const deletedLinks = links.filter((id) => selectedItems.value.includes(+id))
+    const deletedLinksPairs = idToPairs(selectedItem.value.id, deletedLinks)
+    if (deletedLinksPairs.length) emits('deleteLinks', deletedLinksPairs)
+
     mode.value = 'default'
   }
 
