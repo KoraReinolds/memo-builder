@@ -7,6 +7,7 @@
     @new-item="addNewItem"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
+    @new-list="addNewList"
   />
 </template>
 
@@ -111,6 +112,21 @@
     }
 
     return data.value
+  }
+
+  async function addNewList(name: string) {
+    const { data: newList, error } = await useFetch('/api/lists', {
+      method: 'put',
+      body: { name, groupId },
+    })
+
+    if (error.value) {
+      console.warn('addNewList error')
+    }
+
+    if (newList.value) {
+      openedLists.value?.push(newList.value)
+    }
   }
 
   async function addNewItem(listId: number, data: string) {

@@ -14,6 +14,13 @@
         @select-item="selectItem"
       />
     </div>
+    <div>
+      <input
+        v-model="newListName"
+        type="text"
+      />
+      <button @click="createNewList">Add List</button>
+    </div>
   </div>
 </template>
 
@@ -39,9 +46,17 @@
 
   const emits = defineEmits<{
     newItem: [id: number, name: string]
+    newList: [name: string]
     addLinks: [data: [number, number][]]
     deleteLinks: [data: [number, number][]]
   }>()
+
+  const newListName = ref()
+
+  function createNewList() {
+    emits('newList', newListName.value)
+    newListName.value = ''
+  }
 
   function saveChanges() {
     if (!selectedItem.value) return
