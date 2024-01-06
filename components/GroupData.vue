@@ -13,6 +13,7 @@
         :selected-items="selectedItems"
         @new-item="(name) => $emit('newItem', itemList.id, name)"
         @select-item="selectItem"
+        @remove-item="$emit('removeItem', $event)"
       />
     </div>
     <div>
@@ -47,6 +48,7 @@
 
   const emits = defineEmits<{
     newItem: [id: number, name: string]
+    removeItem: [id: number]
     newList: [name: string]
     addLinks: [data: [number, number][]]
     deleteLinks: [data: [number, number][]]
