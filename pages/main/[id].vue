@@ -6,6 +6,7 @@
     :links="openedLinks"
     @new-item="addNewItem"
     @remove-item="removeItem"
+    @remove-list="removeList"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
     @new-list="addNewList"
@@ -113,6 +114,20 @@
     }
 
     return data.value
+  }
+
+  async function removeList(id: number) {
+    const { error } = await useFetch('/api/lists', {
+      method: 'delete',
+      body: { lists: [id] },
+    })
+
+    if (error.value) {
+      console.warn('removeList error')
+    }
+
+    openedLists.value =
+      openedLists.value?.filter((item) => item.id !== id) || null
   }
 
   async function removeItem(id: number) {

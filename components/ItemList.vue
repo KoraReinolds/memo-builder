@@ -1,9 +1,12 @@
 <template>
   <div class="flex justify-between">
     <div>
-      <span>
-        {{ name }}
-      </span>
+      <div>
+        <span>
+          {{ name }}
+        </span>
+        <button @click="$emit('removeList')">Del</button>
+      </div>
       <div
         v-for="item in items"
         :key="item.id"
@@ -56,6 +59,7 @@
   const emits = defineEmits<{
     newItem: [name: string]
     removeItem: [id: number]
+    removeList: []
     selectItem: [id: number]
     'update:modelValue': [selected: Record<string, boolean>]
   }>()

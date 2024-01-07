@@ -29,13 +29,13 @@ async function addNewItemToList(data: AddNewItemParams) {
 }
 
 async function deleteItems(data: number[]) {
-  const item = await prisma.item.deleteMany({
+  const count = await prisma.item.deleteMany({
     where: {
       OR: data.map((id) => ({ id })),
     },
   })
 
-  return item
+  return count
 }
 
 export { getItemsOfGroup, addNewItemToList, deleteItems }

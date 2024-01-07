@@ -23,4 +23,14 @@ async function createList(data: AddListParams) {
   return list
 }
 
-export { createList, getListsOfGroup }
+async function deleteLists(data: number[]) {
+  const count = await prisma.list.deleteMany({
+    where: {
+      OR: data.map((id) => ({ id })),
+    },
+  })
+
+  return count
+}
+
+export { createList, getListsOfGroup, deleteLists }
