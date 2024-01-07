@@ -6,6 +6,7 @@
     <span @click="$emit('open', group.id)">
       {{ group.name }}
     </span>
+    <button @click="$emit('remove', group.id)">Del</button>
   </div>
 </template>
 
@@ -22,5 +23,6 @@
 
   defineEmits<{
     open: [number]
+    remove: [number]
   }>()
 </script>

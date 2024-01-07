@@ -37,4 +37,14 @@ async function createGroup(data: CreateGroupParams) {
   return group
 }
 
-export { getGroupsByUserId, createGroup, getGroupByName }
+async function deleteGroups(data: number[]) {
+  const count = await prisma.group.deleteMany({
+    where: {
+      OR: data.map((id) => ({ id })),
+    },
+  })
+
+  return count
+}
+
+export { getGroupsByUserId, createGroup, getGroupByName, deleteGroups }

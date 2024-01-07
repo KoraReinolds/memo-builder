@@ -127,7 +127,7 @@
     }
 
     openedLists.value =
-      openedLists.value?.filter((item) => item.id !== id) || null
+      openedLists.value?.filter((list) => list.id !== id) || null
   }
 
   async function removeItem(id: number) {

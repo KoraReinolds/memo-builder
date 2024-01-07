@@ -3,6 +3,7 @@
     v-if="groups"
     :groups="groups"
     @open="openGroup"
+    @remove="removeGroup"
   />
   <div>
     <input
@@ -28,6 +29,20 @@
     }
 
     return data.value
+  }
+
+  async function removeGroup(id: number) {
+    console.log(id)
+    const { error } = await useFetch('/api/groups', {
+      method: 'delete',
+      body: { groups: [id] },
+    })
+
+    if (error.value) {
+      console.warn('removeGroup error')
+    }
+
+    groups.value = groups.value?.filter((group) => group.id !== id) || null
   }
 
   async function createNewGroup(name: string) {
