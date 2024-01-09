@@ -6,8 +6,10 @@
     <input
       ref="input"
       class="absolute right-0 w-full"
+      :class="{ 'pointer-events-none': readonly }"
       :value="modelValue"
       type="text"
+      :readonly="readonly"
       @input="changeValue"
     />
   </span>
@@ -24,6 +26,10 @@
     modelValue: {
       type: String,
       required: true,
+    },
+    readonly: {
+      type: Boolean,
+      default: true,
     },
   })
 

@@ -13,7 +13,7 @@
         :class="{ 'bg-lime-500': isHighlight(item.id) }"
       >
         <label :for="`${item.id}`">
-          {{ item.data }}
+          <ResizedInput v-model="item.data" />
         </label>
         <input
           :id="`${item.id}`"
