@@ -12,7 +12,8 @@
     "lint:prettier": "prettier --check .",
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different . && npm run lint:js --fix",
-    "lintfixs": "prettier --write --list-different .\\pages\\main.vue"
+    "lintfixs": "prettier --write --list-different .\\pages\\main.vue",
+    "test:unit": "vitest --config ./vitest.config.js"
   },
   "devDependencies": {
     "@nuxtjs/eslint-module": "^4.1.0",
@@ -27,12 +28,15 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-unicorn": "^50.0.1",
     "eslint-plugin-vue": "^9.19.2",
+    "happy-dom": "^12.10.3",
     "nuxt": "^3.9.0",
+    "nuxt-vitest": "^0.11.5",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.10",
     "prisma": "^5.7.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
+    "vitest": "^0.33.0",
     "vue": "^3.4.3",
     "vue-router": "^4.2.5"
   },
