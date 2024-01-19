@@ -4,13 +4,32 @@
     :list="openedLists"
     :items="openedItems"
     :links="openedLinks"
-    @new-item="addNewItem"
-    @remove-item="removeItem"
-    @remove-list="removeList"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
     @new-list="addNewList"
-  />
+  >
+    <template
+      #items="{
+        linkModeSelected,
+        selectItem,
+        selectedItems,
+        filteredItems,
+        itemList,
+      }"
+    >
+      <ItemList
+        v-if="linkModeSelected[itemList.id]"
+        v-model="linkModeSelected[itemList.id]"
+        :name="itemList.name"
+        :items="filteredItems(openedItems, itemList.id)"
+        :selected-items="selectedItems"
+        @new-item="(name) => addNewItem(itemList.id, name)"
+        @remove-list="removeList(itemList.id)"
+        @select-item="selectItem"
+        @remove-item="removeItem"
+      />
+    </template>
+  </GroupData>
 </template>
 
 <script setup lang="ts">

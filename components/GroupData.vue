@@ -5,17 +5,14 @@
       v-for="itemList in list"
       :key="itemList.id"
     >
-      <ItemList
-        v-if="linkModeSelected[itemList.id]"
-        v-model="linkModeSelected[itemList.id]"
-        :name="itemList.name"
-        :items="filteredItems(items, itemList.id)"
+      <slot
+        name="items"
+        :link-mode-selected="linkModeSelected"
+        :select-item="selectItem"
         :selected-items="selectedItems"
-        @new-item="(name) => $emit('newItem', itemList.id, name)"
-        @remove-list="() => $emit('removeList', itemList.id)"
-        @select-item="selectItem"
-        @remove-item="$emit('removeItem', $event)"
-      />
+        :filtered-items="filteredItems"
+        :item-list="itemList"
+      ></slot>
     </div>
     <div>
       <input
@@ -29,7 +26,6 @@
 
 <script setup lang="ts">
   import type { PropType } from 'vue'
-  import ItemList from '~/components/ItemList.vue'
   import type { IItem, IList, Links } from '~/interfaces/IGroup'
 
   const props = defineProps({
@@ -48,9 +44,6 @@
   })
 
   const emits = defineEmits<{
-    newItem: [id: number, name: string]
-    removeItem: [id: number]
-    removeList: [id: number]
     newList: [name: string]
     addLinks: [data: [number, number][]]
     deleteLinks: [data: [number, number][]]
