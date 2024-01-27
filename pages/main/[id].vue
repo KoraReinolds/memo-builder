@@ -33,7 +33,9 @@
 </template>
 
 <script setup lang="ts">
-  import type { IItem, IList, Links } from '~/interfaces/IGroup'
+  import type { IItem } from '~/core/items/types'
+  import type { Links } from '~/core/links/types'
+  import type { IList } from '~/core/lists/types'
 
   const router = useRouter()
   const groupId = router.currentRoute.value.params.id
@@ -62,7 +64,7 @@
   })
 
   async function deleteLinks(deletedLinks: [number, number][]) {
-    const { data, error } = await useFetch('/api/links', {
+    const { error } = await useFetch('/api/links', {
       method: 'delete',
       body: {
         links: deletedLinks,
@@ -83,7 +85,7 @@
   }
 
   async function saveNewLinks(newLinks: [number, number][]) {
-    const { data, error } = await useFetch('/api/links', {
+    const { error } = await useFetch('/api/links', {
       method: 'put',
       body: {
         links: newLinks,

@@ -1,5 +1,5 @@
 import type { IRepository } from './types'
-import type { ID, IHasID } from '~/interfaces/IHasID'
+import type { ID, IHasID } from '~/core/id/types'
 
 const select = <T extends IHasID>(items: T[], ids: ID[]): T[] =>
   items.filter((item) => ids.includes(item.id))

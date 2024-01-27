@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
   import { type PropType } from 'vue'
-  import { type IGroup } from '../interfaces/IGroup'
+  import type { IGroup } from '~/core/groups/types'
 
   defineProps({
     groups: {

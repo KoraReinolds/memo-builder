@@ -26,7 +26,9 @@
 
 <script setup lang="ts">
   import type { PropType } from 'vue'
-  import type { IItem, IList, Links } from '~/interfaces/IGroup'
+  import type { IItem } from '~/core/items/types'
+  import type { Links } from '~/core/links/types'
+  import type { IList } from '~/core/lists/types'
 
   const props = defineProps({
     list: {

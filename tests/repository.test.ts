@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { test, describe, expect } from 'vitest'
-import { repository } from '~/repository/implementation'
+import { repository } from '~/core/repository/implementation'
 
 type Item = { id: number; extra?: any }
 const items: Item[] = [{ id: 1 }, { id: 2 }]

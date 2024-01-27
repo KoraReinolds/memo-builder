@@ -1,4 +1,4 @@
-import type { ID, IHasID } from '~/interfaces/IHasID'
+import type { ID, IHasID } from '~/core/id/types'
 
 interface IRepository {
   select<T extends IHasID>(items: T[], ids: ID[]): T[]
