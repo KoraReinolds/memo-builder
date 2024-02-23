@@ -14,14 +14,6 @@ model User {
   group Group[]
 }
 
-model Relation {
-  id        Int  @id @default(autoincrement())
-  itemId    Int
-  relatedId Int
-  item      Item @relation("Item", fields: [itemId], references: [id])
-  related   Item @relation("Related", fields: [relatedId], references: [id])
-}
-
 model Group {
   id     Int    @id @default(autoincrement())
   name   String
@@ -31,18 +23,36 @@ model Group {
 }
 
 model List {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
   groupId Int
-  group   Group  @relation(fields: [groupId], references: [id])
-  items   Item[]
+  group   Group   @relation(fields: [groupId], references: [id])
+  Chain   Chain[]
 }
 
 model Item {
-  id       Int        @id @default(autoincrement())
-  data     String
+  id      Int    @id @default(autoincrement()) @map("_id")
+  data    String
+  chain   Chain? @relation(fields: [chainId], references: [id])
+  chainId Int?
+
+  @@map("Item")
+}
+
+model Chain {
+  id       Int             @id @default(autoincrement()) @map("_id")
+  chainId  Int?
+  Item     Item[]
+  linkTo   ChainRelation[] @relation("Item")
+  linkFrom ChainRelation[] @relation("Related")
   listId   Int
-  list     List       @relation(fields: [listId], references: [id])
-  linkTo   Relation[] @relation("Item")
-  linkFrom Relation[] @relation("Related")
+  list     List            @relation(fields: [listId], references: [id])
+}
+
+model ChainRelation {
+  id        Int   @id @default(autoincrement())
+  itemId    Int
+  relatedId Int
+  item      Chain @relation("Item", fields: [itemId], references: [id])
+  related   Chain @relation("Related", fields: [relatedId], references: [id])
 }
