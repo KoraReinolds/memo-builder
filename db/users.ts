@@ -1,26 +1,23 @@
 import { PrismaClient } from '@prisma/client'
+import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
 
-async function getUserById(id: number) {
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      id,
-    },
-  })
-
-  return user
-}
-
-type newUserParams = {
+interface IUser {
   name: string
   email: string
 }
 
-async function createUser(data: newUserParams) {
-  const user = await prisma.user.create({ data })
+export const getUser = async (where: Partial<IUser> & IHasID) =>
+  await prisma.user.findUniqueOrThrow({ where })
 
-  return user
+export const createUser = async (data: IUser) =>
+  await prisma.user.create({ data })
+
+export const getOrCreateUser = async (params: IUser & IHasID) => {
+  try {
+    return await getUser(params)
+  } catch (e) {
+    return await createUser(params)
+  }
 }
-
-export { createUser, getUserById }
