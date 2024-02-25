@@ -1,16 +1,10 @@
+import { juxt, pipe } from 'ramda'
 import { createGroup } from '~/db/groups'
+import { getQueryName, getQueryUserId } from '~/server/query'
 
-export default defineEventHandler(async (event) => {
-  const { name } = await readBody(event)
-
-  if (!name || typeof name !== 'string') {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'name is required',
-    })
-  }
-
-  const userId = 1
-
-  return await createGroup({ name, userId })
-})
+export default defineEventHandler(
+  async (event) =>
+    await pipe(juxt([getQueryName, getQueryUserId]), ([name, userId]) =>
+      createGroup({ name, userId }),
+    )(readBody(event)),
+)
