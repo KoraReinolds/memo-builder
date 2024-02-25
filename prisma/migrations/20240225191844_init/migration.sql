@@ -28,7 +28,7 @@ CREATE TABLE "List" (
 -- CreateTable
 CREATE TABLE "Item" (
     "_id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "data" TEXT NOT NULL,
     "chainId" INTEGER,
 
     CONSTRAINT "Item_pkey" PRIMARY KEY ("_id")
@@ -46,7 +46,7 @@ CREATE TABLE "Chain" (
 -- CreateTable
 CREATE TABLE "ChainRelation" (
     "id" SERIAL NOT NULL,
-    "itemId" INTEGER NOT NULL,
+    "chainId" INTEGER NOT NULL,
     "relatedId" INTEGER NOT NULL,
 
     CONSTRAINT "ChainRelation_pkey" PRIMARY KEY ("id")
@@ -68,7 +68,7 @@ ALTER TABLE "Item" ADD CONSTRAINT "Item_chainId_fkey" FOREIGN KEY ("chainId") RE
 ALTER TABLE "Chain" ADD CONSTRAINT "Chain_listId_fkey" FOREIGN KEY ("listId") REFERENCES "List"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ChainRelation" ADD CONSTRAINT "ChainRelation_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "Chain"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ChainRelation" ADD CONSTRAINT "ChainRelation_chainId_fkey" FOREIGN KEY ("chainId") REFERENCES "Chain"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ChainRelation" ADD CONSTRAINT "ChainRelation_relatedId_fkey" FOREIGN KEY ("relatedId") REFERENCES "Chain"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;

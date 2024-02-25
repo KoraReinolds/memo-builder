@@ -27,7 +27,7 @@ model List {
   name    String
   groupId Int
   group   Group   @relation(fields: [groupId], references: [id])
-  Chain   Chain[]
+  chains  Chain[]
 }
 
 model Item {
@@ -42,7 +42,7 @@ model Item {
 model Chain {
   id       Int             @id @default(autoincrement()) @map("_id")
   chainId  Int?
-  Item     Item[]
+  items    Item[]
   linkTo   ChainRelation[] @relation("Item")
   linkFrom ChainRelation[] @relation("Related")
   listId   Int
@@ -51,8 +51,8 @@ model Chain {
 
 model ChainRelation {
   id        Int   @id @default(autoincrement())
-  itemId    Int
+  chainId   Int
   relatedId Int
-  item      Chain @relation("Item", fields: [itemId], references: [id])
+  chain     Chain @relation("Item", fields: [chainId], references: [id])
   related   Chain @relation("Related", fields: [relatedId], references: [id])
 }
