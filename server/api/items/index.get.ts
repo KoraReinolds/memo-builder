@@ -1,24 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { objOf, pipe } from 'ramda'
+import { getItem } from '~/db/items'
+import { getQueryId } from '~/server/query'
 
-const prisma = new PrismaClient()
-
-async function getItems() {
-  const items = await prisma.item.findMany({
-    include: {
-      linkTo: {
-        select: {
-          relatedId: true,
-        },
-      },
-    },
-  })
-
-  return items.map((item) => ({
-    ...item,
-    linkTo: item.linkTo.map((rel) => rel.relatedId),
-  }))
-}
-
-export default defineEventHandler(async () => {
-  return await getItems()
-})
+export default defineEventHandler(
+  async (event) =>
+    await pipe(getQueryId, objOf('id'), getItem)(getQuery(event)),
+)

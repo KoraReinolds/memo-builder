@@ -17,3 +17,5 @@ export const invalidEmailError = () => throwError(400, 'Email is not valid')
 
 export const invalidGroupsError = () =>
   throwError(400, 'Groups data is not integer array or defined')
+
+export const invalidDataError = () => throwError(400, 'Data is required')

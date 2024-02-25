@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import { map, objOf, pipe } from 'ramda'
+import { pipe } from 'ramda'
+import { idsArrayDelete } from './lib'
 import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
@@ -21,19 +22,13 @@ export const getGroups = async (where: Partial<IGroup> & IHasID) =>
     },
   })
 
-export const getGroup = async (where: IGroup & IHasID) =>
+export const getGroup = async (where: IHasID) =>
   await prisma.group.findUniqueOrThrow({ where })
 
 export const createGroup = async (data: ICreateGroupParams) =>
   await prisma.group.create({ data })
 
-export const deleteGroups = async (data: number[]) =>
-  await pipe(
-    map((id: number) => ({ id })),
-    objOf('OR'),
-    objOf('where'),
-    prisma.group.deleteMany,
-  )(data)
+export const deleteGroups = pipe(idsArrayDelete, prisma.group.deleteMany)
 
 export const getOrCreateGroup = async (params: ICreateGroupParams & IHasID) => {
   try {

@@ -1,41 +1,29 @@
 import { PrismaClient } from '@prisma/client'
+import { pipe } from 'ramda'
+import { idsArrayDelete } from './lib'
+import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
 
-async function getItemsOfGroup(groupId: number) {
-  const items = await prisma.list.findMany({
-    where: {
-      groupId,
-    },
-    select: {
-      items: true,
-    },
-  })
-
-  return items.flatMap((entry) => entry.items)
-}
-
-type AddNewItemParams = {
-  listId: number
+type IItem = {
   data: string
 }
 
-async function addNewItemToList(data: AddNewItemParams) {
-  const item = await prisma.item.create({
-    data,
-  })
+export const getItems = async (where: Partial<IItem> & IHasID) =>
+  await prisma.item.findMany({ where })
 
-  return item
+export const getItem = async (where: IHasID) =>
+  await prisma.item.findUniqueOrThrow({ where })
+
+export const createItem = async (data: IItem) =>
+  await prisma.item.create({ data })
+
+export const deleteItems = pipe(idsArrayDelete, prisma.item.deleteMany)
+
+export const getOrCreateItem = async (params: IItem & IHasID) => {
+  try {
+    return await getItem(params)
+  } catch (e) {
+    return await createItem(params)
+  }
 }
-
-async function deleteItems(data: number[]) {
-  const count = await prisma.item.deleteMany({
-    where: {
-      OR: data.map((id) => ({ id })),
-    },
-  })
-
-  return count
-}
-
-export { getItemsOfGroup, addNewItemToList, deleteItems }

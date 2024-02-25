@@ -1,16 +1,8 @@
-import { addNewItemToList } from '~/db/items'
+import { objOf, pipe } from 'ramda'
+import { createItem } from '~/db/items'
+import { getQueryData } from '~/server/query'
 
-export default defineEventHandler(async (event) => {
-  const { data, listId } = await readBody(event)
-
-  if (!data || !listId || !Number.isInteger(+listId)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: !data
-        ? 'data is required'
-        : 'listId is not integer or defined',
-    })
-  }
-
-  return await addNewItemToList({ data, listId })
-})
+export default defineEventHandler(
+  async (event) =>
+    await pipe(getQueryData, objOf('data'), createItem)(readBody(event)),
+)

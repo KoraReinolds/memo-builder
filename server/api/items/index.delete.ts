@@ -1,14 +1,7 @@
+import { pipe } from 'ramda'
 import { deleteItems } from '~/db/items'
+import { getQueryIds } from '~/server/query'
 
-export default defineEventHandler(async (event) => {
-  const { items } = await readBody(event)
-
-  if (!Array.isArray(items) || items.some((id) => !Number.isInteger(+id))) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'items data is not integer array or defined',
-    })
-  }
-
-  return await deleteItems(items)
-})
+export default defineEventHandler(
+  async (event) => await pipe(getQueryIds, deleteItems)(readBody(event)),
+)

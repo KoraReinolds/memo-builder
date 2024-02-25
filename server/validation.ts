@@ -6,6 +6,7 @@ import {
   invalidIdError,
   invalidNameError,
   invalidUserIdError,
+  invalidDataError,
 } from './errors'
 
 export const validateId = ifElse(isId, identity, invalidIdError)
@@ -16,4 +17,6 @@ export const validateName = ifElse(isString, identity, invalidNameError)
 
 export const validateEmail = ifElse(isEmail, identity, invalidEmailError)
 
-export const validateGroups = ifElse(isNumberList, identity, invalidGroupsError)
+export const validateIds = ifElse(isNumberList, identity, invalidGroupsError)
+
+export const validateData = ifElse(isString, identity, invalidDataError)
