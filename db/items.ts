@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { pipe } from 'ramda'
+import { map, objOf, pipe, prop, split } from 'ramda'
 import { idsArrayDelete } from './lib'
 import { createChain } from './chains'
 import type { IHasID } from '~/core/id/types'
@@ -20,13 +20,33 @@ export const getItems = async (where: Partial<IItem> & IHasID) =>
 export const getItem = async (where: IHasID) =>
   await prisma.item.findUniqueOrThrow({ where })
 
-export const createItem = pipe(
-  ({ data, listId }: IItemCreateParams) => ({
-    items: [{ data }],
+export const createItem = async ({ data, listId }: IItemCreateParams) => {
+  const itemsData = pipe(split(' '), map(objOf('data')))(data)
+
+  await prisma.item.createMany({
+    data: itemsData,
+    skipDuplicates: true,
+  })
+
+  const itemIds = map(
+    prop('id'),
+    await prisma.item.findMany({
+      where: {
+        data: {
+          in: itemsData.map((item) => item.data),
+        },
+      },
+      select: {
+        id: true,
+      },
+    }),
+  )
+
+  return await createChain({
     listId,
-  }),
-  createChain,
-)
+    itemIds,
+  })
+}
 
 export const deleteItems = pipe(idsArrayDelete, prisma.item.deleteMany)
 

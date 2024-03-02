@@ -1,24 +1,29 @@
 import { PrismaClient } from '@prisma/client'
-import { objOf, pipe } from 'ramda'
+import { pipe } from 'ramda'
 import { idsArrayDelete } from './lib'
-import type { IItem } from './items'
 import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
 
 interface ICreateChainParams {
   listId: number
-  items?: IItem[]
+  itemIds: number[]
 }
 
 export const getChain = async (where: IHasID) =>
   await prisma.chain.findUniqueOrThrow({ where })
 
-export const createChain = async ({ listId, items }: ICreateChainParams) =>
+export const createChain = async ({ listId, itemIds }: ICreateChainParams) =>
   await prisma.chain.create({
     data: {
       listId,
-      items: objOf('create')(items),
+      items: {
+        create: itemIds.map((id) => ({
+          item: {
+            connect: { id },
+          },
+        })),
+      },
     },
   })
 

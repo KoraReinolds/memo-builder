@@ -31,28 +31,33 @@ model List {
 }
 
 model Item {
-  id      Int    @id @default(autoincrement()) @map("_id")
-  data    String
-  chain   Chain? @relation(fields: [chainId], references: [id])
-  chainId Int?
-
-  @@map("Item")
+  id     Int         @id @default(autoincrement()) @map("_id")
+  data   String      @unique
+  chains ItemChain[]
 }
 
 model Chain {
   id       Int             @id @default(autoincrement()) @map("_id")
-  chainId  Int?
-  items    Item[]
-  linkTo   ChainRelation[] @relation("Item")
+  items    ItemChain[]
+  linkTo   ChainRelation[] @relation("Chain")
   linkFrom ChainRelation[] @relation("Related")
   listId   Int
   list     List            @relation(fields: [listId], references: [id])
+}
+
+model ItemChain {
+  itemId  Int
+  chainId Int
+  item    Item  @relation(fields: [itemId], references: [id])
+  chain   Chain @relation(fields: [chainId], references: [id])
+
+  @@id([itemId, chainId])
 }
 
 model ChainRelation {
   id        Int   @id @default(autoincrement())
   chainId   Int
   relatedId Int
-  chain     Chain @relation("Item", fields: [chainId], references: [id])
+  chain     Chain @relation("Chain", fields: [chainId], references: [id])
   related   Chain @relation("Related", fields: [relatedId], references: [id])
 }
