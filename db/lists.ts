@@ -1,36 +1,37 @@
 import { PrismaClient } from '@prisma/client'
+import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
 
-async function getListsOfGroup(groupId: number) {
-  const lists = await prisma.list.findMany({
+type ICreateListParams = {
+  groupId: number
+  name: string
+}
+
+export const getList = async (where: IHasID) =>
+  await prisma.list.findUniqueOrThrow({ where })
+
+export const getListsOfGroup = async (groupId: number) =>
+  await prisma.list.findMany({
     where: {
       groupId,
     },
   })
 
-  return lists
-}
+export const createList = async (data: ICreateListParams) =>
+  await prisma.list.create({ data })
 
-type AddListParams = {
-  groupId: number
-  name: string
-}
-
-async function createList(data: AddListParams) {
-  const list = await prisma.list.create({ data })
-
-  return list
-}
-
-async function deleteLists(data: number[]) {
-  const count = await prisma.list.deleteMany({
+export const deleteLists = async (data: number[]) =>
+  await prisma.list.deleteMany({
     where: {
       OR: data.map((id) => ({ id })),
     },
   })
 
-  return count
+export const getOrCreateList = async (params: ICreateListParams & IHasID) => {
+  try {
+    return await getList(params)
+  } catch (e) {
+    return await createList(params)
+  }
 }
-
-export { createList, getListsOfGroup, deleteLists }

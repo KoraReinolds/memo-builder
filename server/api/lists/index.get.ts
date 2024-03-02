@@ -1,14 +1,7 @@
+import { pipe } from 'ramda'
 import { getListsOfGroup } from '~/db/lists'
+import { getQueryId } from '~/server/query'
 
-export default defineEventHandler(async (event) => {
-  const { groupId } = getQuery(event)
-
-  if (!groupId || !Number.isInteger(+groupId)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'groupId is not integer or defined',
-    })
-  }
-
-  return await getListsOfGroup(+groupId)
-})
+export default defineEventHandler(
+  async (event) => await pipe(getQueryId, getListsOfGroup)(getQuery(event)),
+)
