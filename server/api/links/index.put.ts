@@ -1,17 +1,7 @@
-import { saveNewLinks } from '~/db/relations'
+import { pipe } from 'ramda'
+import { createLinks } from '~/db/relations'
+import { getQueryLinks } from '~/server/query'
 
-export default defineEventHandler(async (event) => {
-  const { links } = await readBody(event)
-
-  if (
-    !Array.isArray(links) ||
-    !links.every((link) => !Number.isInteger(+link))
-  ) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'links data is not integer array or defined',
-    })
-  }
-
-  return await saveNewLinks(links)
-})
+export default defineEventHandler(
+  async (event) => await pipe(getQueryLinks, createLinks)(readBody(event)),
+)

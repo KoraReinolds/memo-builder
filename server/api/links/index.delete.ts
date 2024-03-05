@@ -1,17 +1,7 @@
+import { pipe } from 'ramda'
 import { deleteLinks } from '~/db/relations'
+import { getQueryIds } from '~/server/query'
 
-export default defineEventHandler(async (event) => {
-  const { links } = await readBody(event)
-
-  if (
-    !Array.isArray(links) ||
-    !links.every((link) => !Number.isInteger(+link))
-  ) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'links data is not integer array or defined',
-    })
-  }
-
-  return await deleteLinks(links)
-})
+export default defineEventHandler(
+  async (event) => await pipe(getQueryIds, deleteLinks)(readBody(event)),
+)

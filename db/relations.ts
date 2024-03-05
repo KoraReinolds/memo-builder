@@ -1,53 +1,49 @@
 import { PrismaClient } from '@prisma/client'
+import { pipe } from 'ramda'
+import { idsArrayDelete } from './lib'
+import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
 
-async function getLinks(groupId: number) {
-  const links = await prisma.list.findMany({
-    where: {
-      groupId,
-    },
-    select: {
-      items: {
-        select: {
-          linkTo: {
-            select: {
-              itemId: true,
-              relatedId: true,
+export const getLink = async (where: IHasID) =>
+  await prisma.chainRelation.findUniqueOrThrow({ where })
+
+export const getLinks = async (groupId: number) => {
+  return (
+    await prisma.group.findMany({
+      where: {
+        id: groupId,
+      },
+      include: {
+        list: {
+          include: {
+            chains: {
+              select: {
+                linkTo: {
+                  select: {
+                    id: true,
+                    chainId: true,
+                    relatedId: true,
+                  },
+                },
+              },
             },
           },
         },
       },
-    },
-  })
-
-  const items = links.flatMap((entry) => entry.items)
-
-  return items.flatMap((entry) => entry.linkTo)
+    })
+  )
+    .flatMap(({ list }) => list)
+    .flatMap(({ chains }) => chains)
+    .flatMap(({ linkTo }) => linkTo)
 }
 
-async function saveNewLinks(data: [number, number][]) {
-  const count = await prisma.relation.createMany({
+export const createLinks = async (data: [number, number][]) =>
+  await prisma.chainRelation.createMany({
     data: data.map((pair) => ({
-      itemId: pair[0],
+      chainId: pair[0],
       relatedId: pair[1],
     })),
   })
 
-  return count
-}
-
-async function deleteLinks(data: [number, number][]) {
-  const count = await prisma.relation.deleteMany({
-    where: {
-      OR: data.map((pair) => ({
-        itemId: pair[0],
-        relatedId: pair[1],
-      })),
-    },
-  })
-
-  return count
-}
-
-export { getLinks, saveNewLinks, deleteLinks }
+export const deleteLinks = pipe(idsArrayDelete, prisma.chainRelation.deleteMany)

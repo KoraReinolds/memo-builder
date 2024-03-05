@@ -13,5 +13,10 @@ export const isString = (value: any): value is string =>
 export const isEmail = (email: any): email is string =>
   isString(email) && email.includes('@')
 
+export const isArray = (array: any): array is any[] => Array.isArray(array)
+
 export const isNumberList = (array: any): array is number[] =>
-  !Array.isArray(array) || array.some(isNotNumber)
+  isArray(array) && array.every(isNumber)
+
+export const isLinks = (array: any): array is [number, number][] =>
+  isArray(array) && array.every(isNumberList)

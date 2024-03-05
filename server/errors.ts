@@ -25,3 +25,5 @@ export const invalidListIdError = () =>
 
 export const invalidGroupIdError = () =>
   throwError(400, 'groupId is not integer or defined')
+
+export const invalidLinksError = () => throwError(400, 'links are invalid')

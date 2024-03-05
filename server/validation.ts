@@ -1,5 +1,5 @@
 import { ifElse, identity } from 'ramda'
-import { isEmail, isId, isNumberList, isString } from './typeGuards'
+import { isEmail, isId, isLinks, isNumberList, isString } from './typeGuards'
 import {
   invalidEmailError,
   invalidGroupsError,
@@ -9,6 +9,7 @@ import {
   invalidDataError,
   invalidListIdError,
   invalidGroupIdError,
+  invalidLinksError,
 } from './errors'
 
 export const validateId = ifElse(isId, identity, invalidIdError)
@@ -26,3 +27,5 @@ export const validateIds = ifElse(isNumberList, identity, invalidGroupsError)
 export const validateData = ifElse(isString, identity, invalidDataError)
 
 export const validateGroupId = ifElse(isId, identity, invalidGroupIdError)
+
+export const validateLinks = ifElse(isLinks, identity, invalidLinksError)
