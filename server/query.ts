@@ -12,9 +12,9 @@ import {
 } from './validation'
 
 export const getQueryId = pipe(prop('id'), validateId, Number)
-export const getQueryUserId = pipe(prop('userId'), validateUserId, Number)
-export const getQueryGroupId = pipe(prop('groupId'), validateGroupId, Number)
-export const getQueryListId = pipe(prop('listId'), validateListId, Number)
+export const getQueryUserId = pipe(prop('userid'), validateUserId, Number)
+export const getQueryGroupId = pipe(prop('groupid'), validateGroupId, Number)
+export const getQueryListId = pipe(prop('listid'), validateListId, Number)
 export const getQueryName = pipe(prop('name'), validateName)
 export const getQueryEmail = pipe(prop('email'), validateEmail)
 export const getQueryIds = pipe(prop('ids'), validateIds)

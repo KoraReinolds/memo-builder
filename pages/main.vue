@@ -18,11 +18,13 @@
 <script setup lang="ts">
   const router = useRouter()
   const newName = ref('')
-  const groups = ref(await getGroups())
   const userId = 1
 
-  async function getGroups() {
-    const { data, error } = await useFetch(`/api/groups?id=${userId}`)
+  const getGroups = async () => {
+    const { data, error } = await useFetch(
+      `/api/groups/by-user?userid=${userId}`,
+    )
+    console.log(data)
 
     if (error.value) {
       console.warn('GetGroups error')
@@ -31,8 +33,9 @@
     return data.value
   }
 
-  async function removeGroup(id: number) {
-    console.log(id)
+  const groups = ref(await getGroups())
+
+  const removeGroup = async (id: number) => {
     const { error } = await useFetch('/api/groups', {
       method: 'delete',
       body: { groups: [id] },
@@ -45,7 +48,7 @@
     groups.value = groups.value?.filter((group) => group.id !== id) || null
   }
 
-  async function createNewGroup(name: string) {
+  const createNewGroup = async (name: string) => {
     const { error } = await useFetch('/api/groups', {
       method: 'put',
       body: { name },
@@ -60,7 +63,7 @@
     newName.value = ''
   }
 
-  function openGroup(id: number) {
+  const openGroup = (id: number) => {
     router.push({
       name: 'main-id',
       params: { id },

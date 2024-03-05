@@ -12,6 +12,20 @@ interface IGroup {
 interface ICreateGroupParams extends IGroup {
   userId: number
 }
+export const getGroupsByUserId = async (where: IHasID) =>
+  (
+    await prisma.user.findUnique({
+      where,
+      include: {
+        groups: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    })
+  )?.groups
 
 export const getGroups = async (where: Partial<IGroup> & IHasID) =>
   await prisma.group.findMany({
@@ -25,7 +39,7 @@ export const getGroups = async (where: Partial<IGroup> & IHasID) =>
 export const getGroup = async (where: IHasID) =>
   await prisma.group.findUniqueOrThrow({ where })
 
-export const createGroup = async (data: ICreateGroupParams) =>
+export const createGroup = async (data: ICreateGroupParams & IHasID) =>
   await prisma.group.create({ data })
 
 export const deleteGroups = pipe(idsArrayDelete, prisma.group.deleteMany)
