@@ -6,5 +6,5 @@ export default defineEventHandler(
   async (event) =>
     await pipe(juxt([getQueryName, getQueryUserId]), ([name, userId]) =>
       createGroup({ name, userId }),
-    )(readBody(event)),
+    )(await readBody(event)),
 )

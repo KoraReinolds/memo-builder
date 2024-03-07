@@ -24,10 +24,9 @@
     const { data, error } = await useFetch(
       `/api/groups/by-user?userid=${userId}`,
     )
-    console.log(data)
 
     if (error.value) {
-      console.warn('GetGroups error')
+      console.warn('GetGroups error', error.value)
     }
 
     return data.value
@@ -38,11 +37,11 @@
   const removeGroup = async (id: number) => {
     const { error } = await useFetch('/api/groups', {
       method: 'delete',
-      body: { groups: [id] },
+      body: { ids: [id] },
     })
 
     if (error.value) {
-      console.warn('removeGroup error')
+      console.warn('removeGroup error', error.value)
     }
 
     groups.value = groups.value?.filter((group) => group.id !== id) || null
@@ -51,12 +50,12 @@
   const createNewGroup = async (name: string) => {
     const { error } = await useFetch('/api/groups', {
       method: 'put',
-      body: { name },
+      body: { name, userId },
       pick: ['name', 'id'],
     })
 
     if (error.value) {
-      console.warn('createNewGroup error')
+      console.warn('createNewGroup error', error.value)
     }
 
     groups.value = await getGroups()
