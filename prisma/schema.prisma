@@ -15,11 +15,12 @@ model User {
 }
 
 model Group {
-  id     Int    @id @default(autoincrement())
-  name   String
-  userId Int
-  user   User   @relation(fields: [userId], references: [id])
-  list   List[]
+  id      Int     @id @default(autoincrement())
+  name    String
+  userId  Int
+  user    User    @relation(fields: [userId], references: [id])
+  list    List[]
+  deleted Boolean @default(false)
 }
 
 model List {
