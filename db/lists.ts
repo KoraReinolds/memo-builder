@@ -11,7 +11,7 @@ type ICreateListParams = {
 export const getList = async (where: IHasID) =>
   await prisma.list.findUniqueOrThrow({ where })
 
-export const getListsOfGroup = async (groupId: number) =>
+export const getListsByGroupId = async (groupId: number) =>
   await prisma.list.findMany({
     where: {
       groupId,

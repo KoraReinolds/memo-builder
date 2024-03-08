@@ -39,8 +39,19 @@
 
   const router = useRouter()
   const groupId = router.currentRoute.value.params.id
+
+  const getListsByGroupId = async (id: number) => {
+    const { data, error } = await useFetch(`/api/lists/by-group?id=${id}`)
+
+    if (error.value) {
+      console.warn(`${getListsByGroupId.name} error`, error.value)
+    }
+
+    return data.value
+  }
+
   const openedLists = ref<IList[] | null>(
-    groupId ? await getListsById(+groupId) : null,
+    groupId ? await getListsByGroupId(+groupId) : null,
   )
   const openedItems = ref<IItem[] | null>(
     groupId ? await getItemsById(+groupId) : null,
