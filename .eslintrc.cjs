@@ -11,5 +11,6 @@ module.exports = {
     'prettier/prettier': ['error', { configFile: '.prettierrc.js' }],
     semi: ['error', 'never'],
     quotes: ['error', 'single'],
+    'no-console': ['error', { allow: ['warn'] }],
   },
 }
