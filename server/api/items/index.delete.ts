@@ -1,7 +1,7 @@
 import { pipe } from 'ramda'
-import { deleteItems } from '~/db/items'
+import { hideChains } from '~/db/chains'
 import { getQueryIds } from '~/server/query'
 
 export default defineEventHandler(
-  async (event) => await pipe(getQueryIds, deleteItems)(readBody(event)),
+  async (event) => await pipe(getQueryIds, hideChains)(await readBody(event)),
 )

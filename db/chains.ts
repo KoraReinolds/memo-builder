@@ -29,6 +29,12 @@ export const createChain = async ({ listId, itemIds }: ICreateChainParams) =>
 
 export const deleteChain = pipe(idsArrayDelete, prisma.chain.deleteMany)
 
+export const hideChains = async (ids: number[]) =>
+  await prisma.chain.updateMany({
+    where: { id: { in: ids } },
+    data: { deleted: true },
+  })
+
 export const getOrCreateChain = async (params: ICreateChainParams & IHasID) => {
   try {
     return await getChain(params)

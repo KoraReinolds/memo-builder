@@ -23,7 +23,10 @@ interface IGetItemsParams
 
 export const getItems = async (where: IGetItemsParams) => {
   const chainsWithItems = await prisma.chain.findMany({
-    where,
+    where: {
+      ...where,
+      deleted: false,
+    },
     include: {
       items: {
         select: {

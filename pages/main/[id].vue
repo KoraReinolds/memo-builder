@@ -18,7 +18,6 @@
         :list-id="itemList.id"
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
-        @remove-item="removeItem"
       />
     </template>
   </GroupData>
@@ -32,9 +31,6 @@
   const groupId = +router.currentRoute.value.params.id
 
   const { lists: openedLists, createNewList } = useList(groupId)
-
-
-
 
   const links = ref<[number, number][]>(
     groupId ? await getLinksById(+groupId) : [],
@@ -101,19 +97,5 @@
 
     openedLists.value =
       openedLists.value?.filter((list) => list.id !== id) || null
-  }
-
-  const removeItem = async (id: number) => {
-    const { error } = await useFetch('/api/items', {
-      method: 'delete',
-      body: { items: [id] },
-    })
-
-    if (error.value) {
-      console.warn(`${removeItem.name} error`, error.value)
-    }
-
-    openedItems.value =
-      openedItems.value?.filter((item) => item.id !== id) || null
   }
 </script>

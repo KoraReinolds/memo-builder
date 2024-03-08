@@ -21,7 +21,7 @@
           type="checkbox"
           @change="$emit('selectItem', item.id)"
         />
-        <button @click="$emit('removeItem', item.id)">Del</button>
+        <button @click="removeItem(item.id)">Del</button>
       </div>
       <input
         v-model="newItem"
@@ -58,13 +58,12 @@
 
   const emits = defineEmits<{
     newItem: [name: string]
-    removeItem: [id: number]
     removeList: []
     selectItem: [id: number]
     'update:modelValue': [selected: Record<string, boolean>]
   }>()
 
-  const { items, createNewItem } = useItem(props.listId)
+  const { items, createNewItem, removeItem } = useItem(props.listId)
 
   const selected = computed({
     get() {

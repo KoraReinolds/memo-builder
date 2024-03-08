@@ -44,6 +44,7 @@ model Chain {
   linkFrom ChainRelation[] @relation("Related")
   listId   Int
   list     List            @relation(fields: [listId], references: [id])
+  deleted  Boolean         @default(false)
 }
 
 model ItemChain {

@@ -19,6 +19,10 @@ export const useItem = (listId: number) => {
     if (item && items.value) items.value.push(item)
   }
 
+  const removeItemById = (id: number) => {
+    if (items.value) items.value = items.value.filter((item) => item.id !== id)
+  }
+
   const createNewItem = async (listId: number, data: string) => {
     const { data: newItems, error } = await useFetch('/api/items', {
       method: 'put',
@@ -32,6 +36,19 @@ export const useItem = (listId: number) => {
     addItem(newItems.value)
   }
 
+  const removeItem = async (id: number) => {
+    const { error } = await useFetch('/api/items', {
+      method: 'delete',
+      body: { ids: [id] },
+    })
+
+    if (error.value) {
+      console.warn(`${removeItem.name} error`, error.value)
+    }
+
+    removeItemById(id)
+  }
+
   getItemsByListId(listId).then(
     (dbItems) =>
       (items.value = dbItems
@@ -42,5 +59,6 @@ export const useItem = (listId: number) => {
   return {
     items,
     createNewItem,
+    removeItem,
   }
 }
