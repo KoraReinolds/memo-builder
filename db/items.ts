@@ -39,7 +39,7 @@ export const getItems = async (where: IGetItemsParams) => {
 
   return chainsWithItems.map(({ id, items }) => ({
     id,
-    data: items.map(({ item }) => item.data),
+    data: items.map(({ item }) => item.data).join(' '),
   }))
 }
 
@@ -61,7 +61,7 @@ export const getItem = async (where: IHasID) => {
 
   return {
     id: chainWithItems.id,
-    data: chainWithItems.items.map(({ item }) => item.data),
+    data: chainWithItems.items.map(({ item }) => item.data).join(' '),
   }
 }
 

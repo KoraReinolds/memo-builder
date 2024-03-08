@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
   import type { PropType } from 'vue'
-  import type { IItem } from '~/interfaces/IGroup'
+  import { useItem } from '~/adapters/items/useItem'
 
   const props = defineProps({
     name: {
@@ -46,12 +46,12 @@
       type: Array as PropType<number[]>,
       required: true,
     },
-    items: {
-      type: Object as PropType<IItem[]>,
-      required: true,
-    },
     modelValue: {
       type: Object as PropType<Record<string, boolean>>,
+      required: true,
+    },
+    listId: {
+      type: Number,
       required: true,
     },
   })
@@ -63,6 +63,8 @@
     selectItem: [id: number]
     'update:modelValue': [selected: Record<string, boolean>]
   }>()
+
+  const { items } = useItem(props.listId)
 
   const selected = computed({
     get() {

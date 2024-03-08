@@ -1,28 +1,21 @@
 <template>
   <GroupData
-    v-if="openedLists && openedItems && openedLinks"
+    v-if="openedLists && openedLinks"
     :list="openedLists"
-    :items="openedItems"
     :links="openedLinks"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
     @new-list="createNewList"
   >
     <template
-      #items="{
-        linkModeSelected,
-        selectItem,
-        selectedItems,
-        filteredItems,
-        itemList,
-      }"
+      #items="{ linkModeSelected, selectItem, selectedItems, itemList }"
     >
       <ItemList
         v-if="linkModeSelected[itemList.id]"
         v-model="linkModeSelected[itemList.id]"
         :name="itemList.name"
-        :items="filteredItems(openedItems, itemList.id)"
         :selected-items="selectedItems"
+        :list-id="itemList.id"
         @new-item="(name) => addNewItem(itemList.id, name)"
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
@@ -34,7 +27,6 @@
 
 <script setup lang="ts">
   import { useList } from '~/adapters/lists/useList'
-  import type { IItem } from '~/core/items/types'
   import type { Links } from '~/core/links/types'
 
   const router = useRouter()
@@ -45,9 +37,6 @@
 
 
 
-  const openedItems = ref<IItem[] | null>(
-    groupId ? await getItemsById(+groupId) : null,
-  )
   const links = ref<[number, number][]>(
     groupId ? await getLinksById(+groupId) : [],
   )

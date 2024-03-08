@@ -35,10 +35,6 @@
       type: Object as PropType<IList[]>,
       required: true,
     },
-    items: {
-      type: Object as PropType<IItem[]>,
-      required: true,
-    },
     links: {
       type: Object as PropType<Links>,
       required: true,
