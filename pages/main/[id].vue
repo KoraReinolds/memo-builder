@@ -30,11 +30,10 @@
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
 
-  const { lists: openedLists, createNewList } = useList(groupId)
+  const { lists: openedLists, createNewList, removeList } = useList(groupId)
 
-  const links = ref<[number, number][]>(
-    groupId ? await getLinksById(+groupId) : [],
-  )
+  const links = ref<[number, number][]>([])
+  // groupId ? await getLinksById(+groupId) : [],
 
   const openedLinks = computed(() => {
     const res: Links = new Map()
@@ -84,18 +83,5 @@
     }
 
     newLinks.forEach((newLinkPair) => links.value.push(newLinkPair))
-  }
-  const removeList = async (id: number) => {
-    const { error } = await useFetch('/api/lists', {
-      method: 'delete',
-      body: { lists: [id] },
-    })
-
-    if (error.value) {
-      console.warn(`${removeList.name} error`, error.value)
-    }
-
-    openedLists.value =
-      openedLists.value?.filter((list) => list.id !== id) || null
   }
 </script>

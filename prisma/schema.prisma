@@ -29,6 +29,7 @@ model List {
   groupId Int
   group   Group   @relation(fields: [groupId], references: [id])
   chains  Chain[]
+  deleted Boolean @default(false)
 }
 
 model Item {

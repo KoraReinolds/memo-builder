@@ -1,7 +1,7 @@
 import { pipe } from 'ramda'
-import { deleteLists } from '~/db/lists'
+import { hideLists } from '~/db/lists'
 import { getQueryIds } from '~/server/query'
 
 export default defineEventHandler(
-  async (event) => await pipe(getQueryIds, deleteLists)(readBody(event)),
+  async (event) => await pipe(getQueryIds, hideLists)(await readBody(event)),
 )
