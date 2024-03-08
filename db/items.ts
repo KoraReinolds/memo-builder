@@ -14,11 +14,56 @@ interface IItemCreateParams extends IItem {
   listId: number
 }
 
-export const getItems = async (where: Partial<IItem> & IHasID) =>
-  await prisma.item.findMany({ where })
+interface IGetItemsParams
+  extends Partial<
+    IHasID & {
+      listId: number
+    }
+  > {}
 
-export const getItem = async (where: IHasID) =>
-  await prisma.item.findUniqueOrThrow({ where })
+export const getItems = async (where: IGetItemsParams) => {
+  const chainsWithItems = await prisma.chain.findMany({
+    where,
+    include: {
+      items: {
+        select: {
+          item: {
+            select: {
+              data: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return chainsWithItems.map(({ id, items }) => ({
+    id,
+    data: items.map(({ item }) => item.data),
+  }))
+}
+
+export const getItem = async (where: IHasID) => {
+  const chainWithItems = await prisma.chain.findUniqueOrThrow({
+    where,
+    include: {
+      items: {
+        select: {
+          item: {
+            select: {
+              data: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return {
+    id: chainWithItems.id,
+    data: chainWithItems.items.map(({ item }) => item.data),
+  }
+}
 
 export const createItem = async ({ data, listId }: IItemCreateParams) => {
   const itemsData = pipe(split(' '), map(objOf('data')))(data)
