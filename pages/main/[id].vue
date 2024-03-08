@@ -33,22 +33,17 @@
 </template>
 
 <script setup lang="ts">
+  import { useList } from '~/adapters/lists/useList'
   import type { IItem } from '~/core/items/types'
   import type { Links } from '~/core/links/types'
-  import type { IList } from '~/core/lists/types'
 
   const router = useRouter()
-  const groupId = router.currentRoute.value.params.id
+  const groupId = +router.currentRoute.value.params.id
 
-  const getListsByGroupId = async (id: number) => {
-    const { data, error } = await useFetch(`/api/lists/by-group?id=${id}`)
+  const { lists: openedLists } = useList(groupId)
 
-    if (error.value) {
-      console.warn(`${getListsByGroupId.name} error`, error.value)
-    }
 
-    return data.value
-  }
+
 
   const openedLists = ref<IList[] | null>(
     groupId ? await getListsByGroupId(+groupId) : null,
