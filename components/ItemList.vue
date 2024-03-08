@@ -64,7 +64,7 @@
     'update:modelValue': [selected: Record<string, boolean>]
   }>()
 
-  const { items } = useItem(props.listId)
+  const { items, createNewItem } = useItem(props.listId)
 
   const selected = computed({
     get() {
@@ -81,8 +81,8 @@
     return +props.selectedItems.includes(id) ^ +selected.value[id]
   }
 
-  function addNewItem() {
-    emits('newItem', newItem.value)
+  const addNewItem = () => {
+    createNewItem(props.listId, newItem.value)
     newItem.value = ''
   }
 </script>

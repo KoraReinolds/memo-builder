@@ -15,6 +15,23 @@ export const useItem = (listId: number) => {
     return data.value
   }
 
+  const addItem = (item: IItem | null) => {
+    if (item && items.value) items.value.push(item)
+  }
+
+  const createNewItem = async (listId: number, data: string) => {
+    const { data: newItems, error } = await useFetch('/api/items', {
+      method: 'put',
+      body: { listId, data },
+    })
+
+    if (error.value) {
+      console.warn(`${createNewItem.name} error`, error.value)
+    }
+
+    addItem(newItems.value)
+  }
+
   getItemsByListId(listId).then(
     (dbItems) =>
       (items.value = dbItems
@@ -24,5 +41,6 @@ export const useItem = (listId: number) => {
 
   return {
     items,
+    createNewItem,
   }
 }

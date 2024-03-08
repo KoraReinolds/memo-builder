@@ -16,7 +16,6 @@
         :name="itemList.name"
         :selected-items="selectedItems"
         :list-id="itemList.id"
-        @new-item="(name) => addNewItem(itemList.id, name)"
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
         @remove-item="removeItem"
@@ -85,90 +84,36 @@
     })
 
     if (error.value) {
-      console.warn('saveNewLinks error')
+      console.warn(`${saveNewLinks.name} error`, error.value)
     }
 
     newLinks.forEach((newLinkPair) => links.value.push(newLinkPair))
   }
-
-  async function getLinksById(id: number) {
-    const { data, error } = await useFetch(`/api/links?groupId=${id}`)
-
-    if (error.value) {
-      console.warn('getLinksById error')
-    }
-
-    if (data.value) {
-      const entries: [number, number][] = data.value.map((entry) => [
-        entry.itemId,
-        entry.relatedId,
-      ])
-      return entries
-    }
-
-    return []
-  }
-
-  async function getListsById(id: number) {
-    const { data, error } = await useFetch(`/api/lists?groupId=${id}`)
-
-    if (error.value) {
-      console.warn('getListsById error')
-    }
-
-    return data.value
-  }
-
-  async function getItemsById(id: number) {
-    const { data, error } = await useFetch(`/api/items/${id}`)
-
-    if (error.value) {
-      console.warn('getItemsById error')
-    }
-
-    return data.value
-  }
-
-  async function removeList(id: number) {
+  const removeList = async (id: number) => {
     const { error } = await useFetch('/api/lists', {
       method: 'delete',
       body: { lists: [id] },
     })
 
     if (error.value) {
-      console.warn('removeList error')
+      console.warn(`${removeList.name} error`, error.value)
     }
 
     openedLists.value =
       openedLists.value?.filter((list) => list.id !== id) || null
   }
 
-  async function removeItem(id: number) {
+  const removeItem = async (id: number) => {
     const { error } = await useFetch('/api/items', {
       method: 'delete',
       body: { items: [id] },
     })
 
     if (error.value) {
-      console.warn('removeItem error')
+      console.warn(`${removeItem.name} error`, error.value)
     }
 
     openedItems.value =
       openedItems.value?.filter((item) => item.id !== id) || null
-  }
-
-  async function addNewItem(listId: number, data: string) {
-    const { data: newItem, error } = await useFetch('/api/items', {
-      method: 'put',
-      body: { listId, data },
-    })
-
-    if (error.value) {
-      console.warn('addNewItem error')
-    }
-
-    if (newItem.value) {
-      openedItems.value?.push(newItem.value)
-    }
   }
 </script>

@@ -1,8 +1,10 @@
-import { objOf, pipe } from 'ramda'
+import { juxt, pipe } from 'ramda'
 import { createItem } from '~/db/items'
-import { getQueryData } from '~/server/query'
+import { getQueryData, getQueryListId } from '~/server/query'
 
 export default defineEventHandler(
   async (event) =>
-    await pipe(getQueryData, objOf('data'), createItem)(readBody(event)),
+    await pipe(juxt([getQueryData, getQueryListId]), ([data, listId]) =>
+      createItem({ data, listId }),
+    )(await readBody(event)),
 )

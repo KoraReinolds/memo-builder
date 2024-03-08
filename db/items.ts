@@ -87,10 +87,13 @@ export const createItem = async ({ data, listId }: IItemCreateParams) => {
     }),
   )
 
-  return await createChain({
-    listId,
-    itemIds,
-  })
+  return {
+    ...(await createChain({
+      listId,
+      itemIds,
+    })),
+    data,
+  }
 }
 
 export const deleteItems = pipe(idsArrayDelete, prisma.item.deleteMany)
