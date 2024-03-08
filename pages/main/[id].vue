@@ -6,7 +6,7 @@
     :links="openedLinks"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
-    @new-list="addNewList"
+    @new-list="createNewList"
   >
     <template
       #items="{
@@ -40,14 +40,11 @@
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
 
-  const { lists: openedLists } = useList(groupId)
+  const { lists: openedLists, createNewList } = useList(groupId)
 
 
 
 
-  const openedLists = ref<IList[] | null>(
-    groupId ? await getListsByGroupId(+groupId) : null,
-  )
   const openedItems = ref<IItem[] | null>(
     groupId ? await getItemsById(+groupId) : null,
   )
@@ -169,21 +166,6 @@
 
     openedItems.value =
       openedItems.value?.filter((item) => item.id !== id) || null
-  }
-
-  async function addNewList(name: string) {
-    const { data: newList, error } = await useFetch('/api/lists', {
-      method: 'put',
-      body: { name, groupId },
-    })
-
-    if (error.value) {
-      console.warn('addNewList error')
-    }
-
-    if (newList.value) {
-      openedLists.value = [...(openedLists.value || []), newList.value]
-    }
   }
 
   async function addNewItem(listId: number, data: string) {
