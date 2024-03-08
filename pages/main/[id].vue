@@ -1,8 +1,8 @@
 <template>
   <GroupData
-    v-if="openedLists && openedLinks"
-    :list="openedLists"
-    :links="openedLinks"
+    v-if="lists && links"
+    :list="lists"
+    :links="links"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
     @new-list="createNewList"
@@ -24,30 +24,15 @@
 </template>
 
 <script setup lang="ts">
+  import { useRelation } from '~/adapters/links/useRelation'
   import { useList } from '~/adapters/lists/useList'
-  import type { Links } from '~/core/links/types'
 
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
 
-  const { lists: openedLists, createNewList, removeList } = useList(groupId)
+  const { lists, createNewList, removeList } = useList(groupId)
 
-  const links = ref<[number, number][]>([])
-  // groupId ? await getLinksById(+groupId) : [],
-
-  const openedLinks = computed(() => {
-    const res: Links = new Map()
-    const addEl = (key: number, val: number) => {
-      const link = res.get(key)
-      if (link) link.push(val)
-      else res.set(key, [val])
-    }
-    links.value.forEach(([first, second]) => {
-      addEl(first, second)
-      addEl(second, first)
-    })
-    return res
-  })
+  const { links } = useRelation(groupId)
 
   async function deleteLinks(deletedLinks: [number, number][]) {
     const { error } = await useFetch('/api/links', {

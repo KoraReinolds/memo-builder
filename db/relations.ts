@@ -5,11 +5,42 @@ import type { IHasID } from '~/core/id/types'
 
 const prisma = new PrismaClient()
 
-export const getLink = async (where: IHasID) =>
+export interface IDBRelation {
+  id: number
+  relatedId: number
+  chainId: number
+}
+
+export const getLink = async (where: IHasID): Promise<IDBRelation> =>
   await prisma.chainRelation.findUniqueOrThrow({ where })
 
-export const getLinks = async (groupId: number) => {
-  return (
+export const getLinksByItems = async (ids: number[]): Promise<IDBRelation[]> =>
+  await prisma.chainRelation.findMany({
+    where: {
+      OR: [
+        {
+          chainId: {
+            in: ids,
+          },
+        },
+        {
+          relatedId: {
+            in: ids,
+          },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      relatedId: true,
+      chainId: true,
+    },
+  })
+
+export const getLinksByGroupId = async (
+  groupId: number,
+): Promise<IDBRelation[]> =>
+  (
     await prisma.group.findMany({
       where: {
         id: groupId,
@@ -36,7 +67,6 @@ export const getLinks = async (groupId: number) => {
     .flatMap(({ list }) => list)
     .flatMap(({ chains }) => chains)
     .flatMap(({ linkTo }) => linkTo)
-}
 
 export const createLinks = async (data: [number, number][]) =>
   await prisma.chainRelation.createMany({
