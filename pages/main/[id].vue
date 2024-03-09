@@ -5,8 +5,10 @@
     :links="links"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
-    @new-list="createNewList"
   >
+    <template #new-list>
+      <CreateNewList @new-list="createNewList" />
+    </template>
     <template
       #items="{ linkModeSelected, selectItem, selectedItems, itemList }"
     >

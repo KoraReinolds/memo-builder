@@ -13,13 +13,7 @@
         :item-list="itemList"
       ></slot>
     </div>
-    <div>
-      <input
-        v-model="newListName"
-        type="text"
-      />
-      <button @click="createNewList">Add List</button>
-    </div>
+    <slot name="new-list"></slot>
   </div>
 </template>
 
@@ -40,7 +34,6 @@
   })
 
   const emits = defineEmits<{
-    newList: [name: string]
     addLinks: [data: [number, number][]]
     deleteLinks: [data: [number, number][]]
   }>()
@@ -51,13 +44,6 @@
       linkModeSelected.value = getLinkModeSelectedInitialValue()
     },
   )
-
-  const newListName = ref()
-
-  const createNewList = () => {
-    emits('newList', newListName.value)
-    newListName.value = ''
-  }
 
   const saveChanges = () => {
     if (!selectedItem.value) return

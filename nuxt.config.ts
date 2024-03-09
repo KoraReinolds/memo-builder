@@ -6,4 +6,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'nuxt-vitest',
   ],
+  routeRules: {
+    '/main/**': { ssr: false },
+  },
 })
