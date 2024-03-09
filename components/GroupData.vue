@@ -2,7 +2,7 @@
   <button @click="saveChanges">Save</button>
   <div class="flex justify-between">
     <div
-      v-for="itemList in list"
+      v-for="itemList in lists"
       :key="itemList.id"
     >
       <slot
@@ -10,7 +10,6 @@
         :link-mode-selected="linkModeSelected"
         :select-item="selectItem"
         :selected-items="selectedItems"
-        :filtered-items="filteredItems"
         :item-list="itemList"
       ></slot>
     </div>
@@ -26,12 +25,11 @@
 
 <script setup lang="ts">
   import type { PropType } from 'vue'
-  import type { IItem } from '~/core/items/types'
   import type { Links } from '~/core/links/types'
   import type { IList } from '~/core/lists/types'
 
   const props = defineProps({
-    list: {
+    lists: {
       type: Object as PropType<IList[]>,
       required: true,
     },
@@ -48,7 +46,7 @@
   }>()
 
   watch(
-    () => props.list,
+    () => props.lists,
     () => {
       linkModeSelected.value = getLinkModeSelectedInitialValue()
     },
@@ -56,12 +54,12 @@
 
   const newListName = ref()
 
-  function createNewList() {
+  const createNewList = () => {
     emits('newList', newListName.value)
     newListName.value = ''
   }
 
-  function saveChanges() {
+  const saveChanges = () => {
     if (!selectedItem.value) return
 
     const groupedLinks = Object.entries(linkModeSelected.value).filter(
@@ -72,7 +70,7 @@
       .flat()
       .map((str) => +str)
 
-    function idToPairs(rootId: number, listId: number[]) {
+    const idToPairs = (rootId: number, listId: number[]) => {
       const linksPairs: [number, number][] = []
       listId.forEach((id) => {
         linksPairs.push([id, rootId])
@@ -92,13 +90,13 @@
     mode.value = 'default'
   }
 
-  function finishLinksMode() {
+  const finishLinksMode = () => {
     linkModeSelected.value = getLinkModeSelectedInitialValue()
     selectedItemId.value = null
   }
 
-  function getLinkModeSelectedInitialValue() {
-    return Object.fromEntries(props.list.map((entry) => [entry.id, {}]))
+  const getLinkModeSelectedInitialValue = () => {
+    return Object.fromEntries(props.lists.map((entry) => [entry.id, {}]))
   }
 
   const linkModeSelected = ref<Record<string, Record<string, boolean>>>(
@@ -107,14 +105,14 @@
 
   const mode = ref<'default' | 'links'>('default')
 
-  function selectItem(itemId: number) {
+  const selectItem = (itemId: number) => {
     if (itemId === selectedItemId.value) {
       mode.value = 'default'
     } else if (selectedItemId.value === null) {
       mode.value = 'links'
       selectedItemId.value = itemId
     } else {
-      console.log('changeLinks')
+      //  change links
     }
   }
 
@@ -123,10 +121,6 @@
       finishLinksMode()
     }
   })
-
-  function filteredItems(items: IItem[], id: number) {
-    return items.filter((entry) => entry.listId === id)
-  }
 
   const selectedItemId = ref<number | null>(null)
   const selectedItem = computed(() => {

@@ -1,7 +1,7 @@
 <template>
   <GroupData
     v-if="lists && links"
-    :list="lists"
+    :lists="lists"
     :links="links"
     @add-links="saveNewLinks"
     @delete-links="deleteLinks"
@@ -10,7 +10,7 @@
     <template
       #items="{ linkModeSelected, selectItem, selectedItems, itemList }"
     >
-      <ItemList
+      <ItemData
         v-if="linkModeSelected[itemList.id]"
         v-model="linkModeSelected[itemList.id]"
         :name="itemList.name"

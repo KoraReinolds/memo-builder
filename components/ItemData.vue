@@ -76,7 +76,7 @@
 
   const newItem = ref('')
 
-  function isHighlight(id: number) {
+  const isHighlight = (id: number) => {
     return +props.selectedItems.includes(id) ^ +selected.value[id]
   }
 
