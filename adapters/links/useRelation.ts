@@ -4,6 +4,21 @@ import type { IDBRelation } from '~/db/relations'
 export const useRelation = (groupId: number) => {
   const links = ref<Links | null>(null)
 
+  const getLinksByItemsIds = async (ids: number[]) => {
+    const params = new URLSearchParams()
+    ids.forEach((id) => params.append('ids', id.toString()))
+
+    const { data, error } = await useFetch(
+      `/api/links/by-items?${params.toString()}`,
+    )
+
+    if (error.value) {
+      console.warn(`${getLinksByItemsIds.name} error`, error.value)
+    }
+
+    return data.value
+  }
+
   const getLinksByGroupId = async (groupId: number) => {
     const { data, error } = await useFetch(
       `/api/links/by-group?groupId=${groupId}`,

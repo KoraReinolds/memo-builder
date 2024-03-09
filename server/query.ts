@@ -1,4 +1,4 @@
-import { pipe, prop } from 'ramda'
+import { map, pipe, prop } from 'ramda'
 import {
   validateEmail,
   validateId,
@@ -20,6 +20,6 @@ export const getQueryGroupId = pipe(getProp('groupId'), validateGroupId, Number)
 export const getQueryListId = pipe(getProp('listId'), validateListId, Number)
 export const getQueryName = pipe(prop('name'), validateName)
 export const getQueryEmail = pipe(prop('email'), validateEmail)
-export const getQueryIds = pipe(prop('ids'), validateIds)
+export const getQueryIds = pipe(prop('ids'), validateIds, map(Number))
 export const getQueryData = pipe(prop('data'), validateData)
 export const getQueryLinks = pipe(prop('links'), validateLinks)
