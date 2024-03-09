@@ -23,6 +23,9 @@
   <div>
     {{ selectedItems }}
   </div>
+  <div>
+    {{ newSelectedIds }}
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -57,28 +60,20 @@
     idsListToSelectedAdapter(associatedLinks.value),
   )
 
-  const mode = ref<'default' | 'links'>('default')
+  const cancelSeleting = () => {
+    clearSelected()
+    selectedItemId.value = null
+  }
 
   const selectItem = (itemId: number) => {
     if (itemId === selectedItemId.value) {
-      mode.value = 'default'
+      cancelSeleting()
     } else if (selectedItemId.value === null) {
-      mode.value = 'links'
       selectedItemId.value = itemId
     } else {
       //  change links
     }
   }
-  const finishLinksMode = () => {
-    clearSelected()
-    selectedItemId.value = null
-  }
-
-  watch(mode, (_, oldValue) => {
-    if (oldValue === 'links') {
-      finishLinksMode()
-    }
-  })
 
   const saveChanges = () => {
     if (!selectedItemId.value) return
@@ -105,7 +100,7 @@
     const deletedLinksPairs = idToPairs(selectedItemId.value, removedLinks)
     if (deletedLinksPairs.length) deleteLinks(deletedLinksPairs)
 
-    mode.value = 'default'
+    cancelSeleting()
   }
 
   async function deleteLinks(deletedLinks: [number, number][]) {
