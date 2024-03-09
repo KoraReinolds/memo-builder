@@ -11,35 +11,44 @@ export interface IDBRelation {
   chainId: number
 }
 
-export const getLink = async (where: IHasID): Promise<IDBRelation> =>
-  await prisma.chainRelation.findUniqueOrThrow({ where })
+export type RelationPair = [number, number]
 
-export const getLinksByItems = async (ids: number[]): Promise<IDBRelation[]> =>
-  await prisma.chainRelation.findMany({
-    where: {
-      OR: [
-        {
-          chainId: {
-            in: ids,
+const relationAdapter = (dbRel: IDBRelation): RelationPair => [
+  dbRel.chainId,
+  dbRel.relatedId,
+]
+
+export const getLink = async (where: IHasID): Promise<RelationPair> =>
+  relationAdapter(await prisma.chainRelation.findUniqueOrThrow({ where }))
+
+export const getLinksByItems = async (ids: number[]): Promise<RelationPair[]> =>
+  (
+    await prisma.chainRelation.findMany({
+      where: {
+        OR: [
+          {
+            chainId: {
+              in: ids,
+            },
           },
-        },
-        {
-          relatedId: {
-            in: ids,
+          {
+            relatedId: {
+              in: ids,
+            },
           },
-        },
-      ],
-    },
-    select: {
-      id: true,
-      relatedId: true,
-      chainId: true,
-    },
-  })
+        ],
+      },
+      select: {
+        id: true,
+        relatedId: true,
+        chainId: true,
+      },
+    })
+  ).map(relationAdapter)
 
 export const getLinksByGroupId = async (
   groupId: number,
-): Promise<IDBRelation[]> =>
+): Promise<RelationPair[]> =>
   (
     await prisma.group.findMany({
       where: {
@@ -67,6 +76,7 @@ export const getLinksByGroupId = async (
     .flatMap(({ list }) => list)
     .flatMap(({ chains }) => chains)
     .flatMap(({ linkTo }) => linkTo)
+    .map(relationAdapter)
 
 export const createLinks = async (data: [number, number][]) =>
   await prisma.chainRelation.createMany({

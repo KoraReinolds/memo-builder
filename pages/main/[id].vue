@@ -41,7 +41,8 @@
 
   const { lists, createNewList, removeList } = useList(groupId)
 
-  const { links, getNewLinks, getRemovedLinks } = useRelation(groupId)
+  const { links, getNewLinks, getRemovedLinks, createLinks } =
+    useRelation(groupId)
 
   const {
     newSelectedIds,
@@ -52,9 +53,9 @@
 
   const selectedItemId = ref<number | null>(null)
 
-  const associatedLinks = computed(
-    () => links.value?.get(selectedItemId.value || -1) || [],
-  )
+  const associatedLinks = computed(() => [
+    ...(links.value?.get(selectedItemId.value || -1) || []),
+  ])
 
   const selectedItems = computed<SelectedItemUI>(() =>
     idsListToSelectedAdapter(associatedLinks.value),
@@ -87,15 +88,16 @@
 
     const idToPairs = (rootId: number, listId: number[]) => {
       const linksPairs: [number, number][] = []
-      listId.forEach((id) => {
-        linksPairs.push([id, rootId])
-        linksPairs.push([rootId, id])
-      })
+      listId
+        .filter((id) => id !== rootId)
+        .forEach((id) => {
+          linksPairs.push([id, rootId])
+        })
       return linksPairs
     }
 
     const newLinksPairs = idToPairs(selectedItemId.value, newLinks)
-    if (newLinksPairs.length) saveNewLinks(newLinksPairs)
+    if (newLinksPairs.length) createLinks(newLinksPairs)
 
     const deletedLinksPairs = idToPairs(selectedItemId.value, removedLinks)
     if (deletedLinksPairs.length) deleteLinks(deletedLinksPairs)
@@ -122,20 +124,5 @@
             linkPair.toString() === deletedLinkPair.toString(),
         ) === undefined,
     )
-  }
-
-  async function saveNewLinks(newLinks: [number, number][]) {
-    const { error } = await useFetch('/api/links', {
-      method: 'put',
-      body: {
-        links: newLinks,
-      },
-    })
-
-    if (error.value) {
-      console.warn(`${saveNewLinks.name} error`, error.value)
-    }
-
-    newLinks.forEach((newLinkPair) => links.value.push(newLinkPair))
   }
 </script>

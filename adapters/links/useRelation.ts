@@ -1,11 +1,11 @@
 import { difference, intersection } from 'ramda'
 import type { Links } from '~/core/links/types'
-import type { IDBRelation } from '~/db/relations'
+import type { RelationPair } from '~/db/relations'
 
 export const useRelation = (groupId: number) => {
-  const links = ref<Links | null>(null)
+  const links = ref<Links>(new Map())
 
-  const getLinksByItemsIds = async (ids: number[]) => {
+  const addLinksByItemsIds = async (ids: number[]) => {
     const params = new URLSearchParams()
     ids.forEach((id) => params.append('ids', id.toString()))
 
@@ -14,10 +14,10 @@ export const useRelation = (groupId: number) => {
     )
 
     if (error.value) {
-      console.warn(`${getLinksByItemsIds.name} error`, error.value)
+      console.warn(`${addLinksByItemsIds.name} error`, error.value)
     }
 
-    return data.value
+    addRelations(data.value)
   }
 
   const getLinksByGroupId = async (groupId: number) => {
@@ -32,36 +32,49 @@ export const useRelation = (groupId: number) => {
     return data.value
   }
 
-  const dbRelationAdapter = (dbRelation: IDBRelation[]) => {
-    const res: Links = new Map()
+  const addRelation = (res: Links, key: number, val: number) => {
+    const link = res.get(key)
+    if (link) link.add(val)
+    else res.set(key, new Set([val]))
+  }
 
-    const addEl = (key: number, val: number) => {
-      const link = res.get(key)
-      if (link) link.push(val)
-      else res.set(key, [val])
-    }
+  const addRelations = (pairs: RelationPair[] | null) => {
+    if (!pairs) return
 
-    const links = dbRelation.map((link) => [link.chainId, link.relatedId])
+    const res = links.value
 
-    links.forEach(([first, second]) => {
-      addEl(first, second)
-      addEl(second, first)
+    pairs?.forEach(([first, second]) => {
+      addRelation(res, first, second)
+      addRelation(res, second, first)
     })
-
-    return res
   }
 
   const getRemovedLinks = intersection
 
   const getNewLinks = difference
 
-  getLinksByGroupId(groupId).then(
-    (dbRelation) => (links.value = dbRelationAdapter(dbRelation || [])),
-  )
+  getLinksByGroupId(groupId).then(addRelations)
+
+  const createLinks = async (newLinks: [number, number][]) => {
+    const { error } = await useFetch('/api/links', {
+      method: 'put',
+      body: {
+        links: newLinks,
+      },
+    })
+
+    if (error.value) {
+      console.warn(`${createLinks.name} error`, error.value)
+    }
+
+    addRelations(newLinks)
+  }
 
   return {
     links,
     getRemovedLinks,
     getNewLinks,
+    createLinks,
+    addLinksByItemsIds,
   }
 }
