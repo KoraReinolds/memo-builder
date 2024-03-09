@@ -7,7 +7,6 @@
     >
       <slot
         name="items"
-        :select-item="selectItem"
         :selected-links="selectedItems"
         :item-list="itemList"
       ></slot>
@@ -68,11 +67,6 @@
     mode.value = 'default'
   }
 
-  const finishLinksMode = () => {
-    // linkModeSelected.value = getLinkModeSelectedInitialValue()
-    selectedItemId.value = null
-  }
-
   // const getLinkModeSelectedInitialValue = () => {
   //   return Object.fromEntries(props.lists.map((entry) => [entry.id, {}]))
   // }
@@ -80,25 +74,6 @@
   // const linkModeSelected = ref<Record<string, Record<string, boolean>>>(
   //   getLinkModeSelectedInitialValue(),
   // )
-
-  const mode = ref<'default' | 'links'>('default')
-
-  const selectItem = (itemId: number) => {
-    if (itemId === selectedItemId.value) {
-      mode.value = 'default'
-    } else if (selectedItemId.value === null) {
-      mode.value = 'links'
-      selectedItemId.value = itemId
-    } else {
-      //  change links
-    }
-  }
-
-  watch(mode, (_, oldValue) => {
-    if (oldValue === 'links') {
-      finishLinksMode()
-    }
-  })
 
   const selectedItemId = ref<number | null>(null)
   const selectedItem = computed(() => {

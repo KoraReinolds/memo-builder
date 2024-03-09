@@ -36,6 +36,7 @@
 <script setup lang="ts">
   import type { PropType } from 'vue'
   import { useItem } from '~/adapters/items/useItem'
+  import type { SelectedItemUI } from '~/adapters/items/useSelectedItems'
 
   const props = defineProps({
     name: {
@@ -43,7 +44,7 @@
       required: true,
     },
     selectedItems: {
-      type: Array as PropType<number[]>,
+      type: Object as PropType<SelectedItemUI>,
       required: true,
     },
     modelValue: {
@@ -77,7 +78,7 @@
   const newItem = ref('')
 
   const isHighlight = (id: number) => {
-    return +props.selectedItems.includes(id) ^ +selected.value[id]
+    return +props.selectedItems[id] ^ +selected.value[id]
   }
 
   const addNewItem = () => {

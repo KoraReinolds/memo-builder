@@ -9,23 +9,31 @@
     <template #new-list>
       <CreateNewList @new-list="createNewList" />
     </template>
-    <template #items="{ selectItem, selectedLinks, itemList }">
+    <template #items="{ itemList }">
       <ItemData
-        v-if="selectedItems[itemList.id]"
-        v-model="selectedItems[itemList.id]"
+        v-if="newSelectedItems[itemList.id]"
+        v-model="newSelectedItems[itemList.id]"
         :name="itemList.name"
-        :selected-items="selectedLinks"
+        :selected-items="selectedItems"
         :list-id="itemList.id"
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
       />
     </template>
   </GroupData>
-  {{ selectedItems }}
+  <div>
+    {{ newSelectedItems }}
+  </div>
+  <div>
+    {{ selectedItems }}
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { useSelectedItems } from '~/adapters/items/useSelectedItems'
+  import {
+    useSelectedItems,
+    type SelectedItemUI,
+  } from '~/adapters/items/useSelectedItems'
   import { useRelation } from '~/adapters/links/useRelation'
   import { useList } from '~/adapters/lists/useList'
 
@@ -36,7 +44,39 @@
 
   const { links } = useRelation(groupId)
 
-  const { selectedItems } = useSelectedItems(lists)
+  const { newSelectedItems, idsListToSelectedAdapter, clearSelected } =
+    useSelectedItems(lists)
+
+  const selectedItemId = ref<number | null>(null)
+
+  const selectedItems = computed<SelectedItemUI>(() =>
+    idsListToSelectedAdapter(
+      links.value?.get(selectedItemId.value || -1) || [],
+    ),
+  )
+
+  const mode = ref<'default' | 'links'>('default')
+
+  const selectItem = (itemId: number) => {
+    if (itemId === selectedItemId.value) {
+      mode.value = 'default'
+    } else if (selectedItemId.value === null) {
+      mode.value = 'links'
+      selectedItemId.value = itemId
+    } else {
+      //  change links
+    }
+  }
+  const finishLinksMode = () => {
+    clearSelected()
+    selectedItemId.value = null
+  }
+
+  watch(mode, (_, oldValue) => {
+    if (oldValue === 'links') {
+      finishLinksMode()
+    }
+  })
 
   async function deleteLinks(deletedLinks: [number, number][]) {
     const { error } = await useFetch('/api/links', {
