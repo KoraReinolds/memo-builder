@@ -1,15 +1,10 @@
 <template>
-  <GroupData
-    v-if="lists && links"
-    :lists="lists"
-    :links="links"
-    @add-links="saveNewLinks"
-    @delete-links="deleteLinks"
-  >
-    <template #new-list>
-      <CreateNewList @new-list="createNewList" />
-    </template>
-    <template #items="{ itemList }">
+  <button @click="saveChanges">Save</button>
+  <div class="flex justify-between">
+    <div
+      v-for="itemList in lists"
+      :key="itemList.id"
+    >
       <ItemData
         v-if="newSelectedItems[itemList.id]"
         v-model="newSelectedItems[itemList.id]"
@@ -19,8 +14,9 @@
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
       />
-    </template>
-  </GroupData>
+    </div>
+    <CreateNewList @new-list="createNewList" />
+  </div>
   <div>
     {{ newSelectedItems }}
   </div>
@@ -42,17 +38,23 @@
 
   const { lists, createNewList, removeList } = useList(groupId)
 
-  const { links } = useRelation(groupId)
+  const { links, getNewLinks, getRemovedLinks } = useRelation(groupId)
 
-  const { newSelectedItems, idsListToSelectedAdapter, clearSelected } =
-    useSelectedItems(lists)
+  const {
+    newSelectedIds,
+    newSelectedItems,
+    idsListToSelectedAdapter,
+    clearSelected,
+  } = useSelectedItems(lists)
 
   const selectedItemId = ref<number | null>(null)
 
+  const associatedLinks = computed(
+    () => links.value?.get(selectedItemId.value || -1) || [],
+  )
+
   const selectedItems = computed<SelectedItemUI>(() =>
-    idsListToSelectedAdapter(
-      links.value?.get(selectedItemId.value || -1) || [],
-    ),
+    idsListToSelectedAdapter(associatedLinks.value),
   )
 
   const mode = ref<'default' | 'links'>('default')
@@ -77,6 +79,34 @@
       finishLinksMode()
     }
   })
+
+  const saveChanges = () => {
+    if (!selectedItemId.value) return
+
+    const removedLinks = getRemovedLinks(
+      associatedLinks.value,
+      newSelectedIds.value,
+    )
+
+    const newLinks = getNewLinks(newSelectedIds.value, associatedLinks.value)
+
+    const idToPairs = (rootId: number, listId: number[]) => {
+      const linksPairs: [number, number][] = []
+      listId.forEach((id) => {
+        linksPairs.push([id, rootId])
+        linksPairs.push([rootId, id])
+      })
+      return linksPairs
+    }
+
+    const newLinksPairs = idToPairs(selectedItemId.value, newLinks)
+    if (newLinksPairs.length) saveNewLinks(newLinksPairs)
+
+    const deletedLinksPairs = idToPairs(selectedItemId.value, removedLinks)
+    if (deletedLinksPairs.length) deleteLinks(deletedLinksPairs)
+
+    mode.value = 'default'
+  }
 
   async function deleteLinks(deletedLinks: [number, number][]) {
     const { error } = await useFetch('/api/links', {
@@ -114,4 +144,3 @@
     newLinks.forEach((newLinkPair) => links.value.push(newLinkPair))
   }
 </script>
-~/adapters/items/useSelectedItems

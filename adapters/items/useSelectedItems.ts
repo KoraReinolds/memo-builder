@@ -1,3 +1,4 @@
+import { map } from 'ramda'
 import type { IList } from '~/core/lists/types'
 
 export type SelectedItemUI = Record<string, boolean>
@@ -19,6 +20,18 @@ export const useSelectedItems = (lists: Ref<IList[] | null>) => {
   const idsListToSelectedAdapter = (ids: number[] | string[]): SelectedItemUI =>
     Object.fromEntries(ids.map((id) => [id, true]))
 
+  const selectedToidsListAdapter = (selected: SelectedItemUI): string[] =>
+    Object.keys(selected).flat()
+
+  const newSelectedIds = computed(() =>
+    map(
+      Number,
+      Object.values(newSelectedItems.value)
+        .map(selectedToidsListAdapter)
+        .flat(),
+    ),
+  )
+
   watch(
     () => lists.value,
     (lists) => {
@@ -26,5 +39,10 @@ export const useSelectedItems = (lists: Ref<IList[] | null>) => {
     },
   )
 
-  return { newSelectedItems, idsListToSelectedAdapter, clearSelected }
+  return {
+    newSelectedItems,
+    idsListToSelectedAdapter,
+    clearSelected,
+    newSelectedIds,
+  }
 }

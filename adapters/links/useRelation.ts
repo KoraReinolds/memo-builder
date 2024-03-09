@@ -1,3 +1,4 @@
+import { difference, intersection } from 'ramda'
 import type { Links } from '~/core/links/types'
 import type { IDBRelation } from '~/db/relations'
 
@@ -50,11 +51,17 @@ export const useRelation = (groupId: number) => {
     return res
   }
 
+  const getRemovedLinks = intersection
+
+  const getNewLinks = difference
+
   getLinksByGroupId(groupId).then(
     (dbRelation) => (links.value = dbRelationAdapter(dbRelation || [])),
   )
 
   return {
     links,
+    getRemovedLinks,
+    getNewLinks,
   }
 }
