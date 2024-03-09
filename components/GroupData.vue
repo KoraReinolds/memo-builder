@@ -7,9 +7,8 @@
     >
       <slot
         name="items"
-        :link-mode-selected="linkModeSelected"
         :select-item="selectItem"
-        :selected-items="selectedItems"
+        :selected-links="selectedItems"
         :item-list="itemList"
       ></slot>
     </div>
@@ -37,13 +36,6 @@
     addLinks: [data: [number, number][]]
     deleteLinks: [data: [number, number][]]
   }>()
-
-  watch(
-    () => props.lists,
-    () => {
-      linkModeSelected.value = getLinkModeSelectedInitialValue()
-    },
-  )
 
   const saveChanges = () => {
     if (!selectedItem.value) return
@@ -77,17 +69,17 @@
   }
 
   const finishLinksMode = () => {
-    linkModeSelected.value = getLinkModeSelectedInitialValue()
+    // linkModeSelected.value = getLinkModeSelectedInitialValue()
     selectedItemId.value = null
   }
 
-  const getLinkModeSelectedInitialValue = () => {
-    return Object.fromEntries(props.lists.map((entry) => [entry.id, {}]))
-  }
+  // const getLinkModeSelectedInitialValue = () => {
+  //   return Object.fromEntries(props.lists.map((entry) => [entry.id, {}]))
+  // }
 
-  const linkModeSelected = ref<Record<string, Record<string, boolean>>>(
-    getLinkModeSelectedInitialValue(),
-  )
+  // const linkModeSelected = ref<Record<string, Record<string, boolean>>>(
+  //   getLinkModeSelectedInitialValue(),
+  // )
 
   const mode = ref<'default' | 'links'>('default')
 

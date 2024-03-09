@@ -9,23 +9,23 @@
     <template #new-list>
       <CreateNewList @new-list="createNewList" />
     </template>
-    <template
-      #items="{ linkModeSelected, selectItem, selectedItems, itemList }"
-    >
+    <template #items="{ selectItem, selectedLinks, itemList }">
       <ItemData
-        v-if="linkModeSelected[itemList.id]"
-        v-model="linkModeSelected[itemList.id]"
+        v-if="selectedItems[itemList.id]"
+        v-model="selectedItems[itemList.id]"
         :name="itemList.name"
-        :selected-items="selectedItems"
+        :selected-items="selectedLinks"
         :list-id="itemList.id"
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
       />
     </template>
   </GroupData>
+  {{ selectedItems }}
 </template>
 
 <script setup lang="ts">
+  import { useSelectedItems } from '~/adapters/items/useSelectedItems'
   import { useRelation } from '~/adapters/links/useRelation'
   import { useList } from '~/adapters/lists/useList'
 
@@ -35,6 +35,8 @@
   const { lists, createNewList, removeList } = useList(groupId)
 
   const { links } = useRelation(groupId)
+
+  const { selectedItems } = useSelectedItems(lists)
 
   async function deleteLinks(deletedLinks: [number, number][]) {
     const { error } = await useFetch('/api/links', {
@@ -72,3 +74,4 @@
     newLinks.forEach((newLinkPair) => links.value.push(newLinkPair))
   }
 </script>
+~/adapters/items/useSelectedItems
