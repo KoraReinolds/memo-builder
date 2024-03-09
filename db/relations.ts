@@ -19,12 +19,20 @@ const relationAdapter = (dbRel: IDBRelation): RelationPair => [
 ]
 
 export const getLink = async (where: IHasID): Promise<RelationPair> =>
-  relationAdapter(await prisma.chainRelation.findUniqueOrThrow({ where }))
+  relationAdapter(
+    await prisma.chainRelation.findUniqueOrThrow({
+      where: {
+        ...where,
+        deleted: false,
+      },
+    }),
+  )
 
 export const getLinksByItems = async (ids: number[]): Promise<RelationPair[]> =>
   (
     await prisma.chainRelation.findMany({
       where: {
+        deleted: false,
         OR: [
           {
             chainId: {
@@ -60,6 +68,9 @@ export const getLinksByGroupId = async (
             chains: {
               select: {
                 linkTo: {
+                  where: {
+                    deleted: false,
+                  },
                   select: {
                     id: true,
                     chainId: true,
@@ -78,7 +89,7 @@ export const getLinksByGroupId = async (
     .flatMap(({ linkTo }) => linkTo)
     .map(relationAdapter)
 
-export const createLinks = async (data: [number, number][]) =>
+export const createLinks = async (data: RelationPair[]) =>
   await prisma.chainRelation.createMany({
     data: data.map((pair) => ({
       chainId: pair[0],
@@ -86,4 +97,24 @@ export const createLinks = async (data: [number, number][]) =>
     })),
   })
 
-export const deleteLinks = pipe(idsArrayDelete, prisma.chainRelation.deleteMany)
+export const hideLinks = async (links: RelationPair[]) => {
+  for (const link of links) {
+    await prisma.chainRelation.updateMany({
+      where: {
+        OR: [
+          {
+            chainId: link[0],
+            relatedId: link[1],
+          },
+          {
+            chainId: link[1],
+            relatedId: link[0],
+          },
+        ],
+      },
+      data: {
+        deleted: true,
+      },
+    })
+  }
+}

@@ -38,6 +38,13 @@ export const useRelation = (groupId: number) => {
     else res.set(key, new Set([val]))
   }
 
+  const removeRelations = (pairs: RelationPair[]) => {
+    pairs.forEach(([key, val]) => {
+      links.value.get(key)?.delete(val)
+      links.value.get(val)?.delete(key)
+    })
+  }
+
   const addRelations = (pairs: RelationPair[] | null) => {
     if (!pairs) return
 
@@ -70,11 +77,27 @@ export const useRelation = (groupId: number) => {
     addRelations(newLinks)
   }
 
+  const removeLinks = async (links: [number, number][]) => {
+    const { error } = await useFetch('/api/links', {
+      method: 'delete',
+      body: {
+        links,
+      },
+    })
+
+    if (error.value) {
+      console.warn(`${removeLinks.name} error`, error.value)
+    }
+
+    removeRelations(links)
+  }
+
   return {
     links,
     getRemovedLinks,
     getNewLinks,
     createLinks,
     addLinksByItemsIds,
+    removeLinks,
   }
 }

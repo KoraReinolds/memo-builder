@@ -41,7 +41,7 @@
 
   const { lists, createNewList, removeList } = useList(groupId)
 
-  const { links, getNewLinks, getRemovedLinks, createLinks } =
+  const { links, getNewLinks, getRemovedLinks, createLinks, removeLinks } =
     useRelation(groupId)
 
   const {
@@ -100,29 +100,8 @@
     if (newLinksPairs.length) createLinks(newLinksPairs)
 
     const deletedLinksPairs = idToPairs(selectedItemId.value, removedLinks)
-    if (deletedLinksPairs.length) deleteLinks(deletedLinksPairs)
+    if (deletedLinksPairs.length) removeLinks(deletedLinksPairs)
 
     cancelSeleting()
-  }
-
-  async function deleteLinks(deletedLinks: [number, number][]) {
-    const { error } = await useFetch('/api/links', {
-      method: 'delete',
-      body: {
-        links: deletedLinks,
-      },
-    })
-
-    if (error.value) {
-      console.warn('deleteLinks error')
-    }
-
-    links.value = links.value.filter(
-      (linkPair) =>
-        deletedLinks.find(
-          (deletedLinkPair) =>
-            linkPair.toString() === deletedLinkPair.toString(),
-        ) === undefined,
-    )
   }
 </script>

@@ -1,7 +1,7 @@
 import { pipe } from 'ramda'
-import { deleteLinks } from '~/db/relations'
-import { getQueryIds } from '~/server/query'
+import { hideLinks } from '~/db/relations'
+import { getQueryLinks } from '~/server/query'
 
 export default defineEventHandler(
-  async (event) => await pipe(getQueryIds, deleteLinks)(readBody(event)),
+  async (event) => await pipe(getQueryLinks, hideLinks)(await readBody(event)),
 )

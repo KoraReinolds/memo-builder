@@ -58,9 +58,10 @@ model ItemChain {
 }
 
 model ChainRelation {
-  id        Int   @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   chainId   Int
   relatedId Int
-  chain     Chain @relation("Chain", fields: [chainId], references: [id])
-  related   Chain @relation("Related", fields: [relatedId], references: [id])
+  chain     Chain   @relation("Chain", fields: [chainId], references: [id])
+  related   Chain   @relation("Related", fields: [relatedId], references: [id])
+  deleted   Boolean @default(false)
 }
