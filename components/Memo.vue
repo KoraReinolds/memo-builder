@@ -1,7 +1,9 @@
 <template>
-  <div>{{ association }}</div>
-  <div>{{ suggestions }}</div>
-  <button @click="start">Start</button>
+  <div>
+    <div>{{ association }}</div>
+    <div>{{ suggestions }}</div>
+    <button @click="start">Start</button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -40,4 +42,11 @@
         .filter(isSuggestionItem)
     }
   }
+
+  const hotkey = (event: KeyboardEvent) => {
+    if (event.code === 'KeyS') start()
+  }
+
+  onMounted(() => window.addEventListener('keydown', hotkey))
+  onBeforeUnmount(() => window.removeEventListener('keydown', hotkey))
 </script>
