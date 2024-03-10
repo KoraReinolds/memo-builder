@@ -45,9 +45,15 @@
   const { links, getNewLinks, getRemovedLinks, createLinks, removeLinks } =
     useRelation(groupId)
 
+  const listsKeys = computed(() => Object.keys(lists.value || {}))
+
   const memoSettings: IMemoConfig = {
-    associations: { count: 5, listId: 14 },
-    suggestions: { count: { min: 1, max: 2 }, listId: 13, totalCount: 4 },
+    associations: { count: 5, listId: +listsKeys.value[2] },
+    suggestions: {
+      count: { min: 1, max: 2 },
+      listId: +listsKeys.value[1],
+      totalCount: 4,
+    },
   }
 
   const {
