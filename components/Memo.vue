@@ -1,7 +1,8 @@
 <template>
   <div>
     {{ selectedSuggestions }}
-    <div>{{ association }}</div>
+    <div>{{ association?.data }}</div>
+    {{ suggestions }}
     <div
       v-for="item in suggestions"
       :key="item.id"
@@ -14,11 +15,11 @@
         v-model="selectedSuggestions[item.id]"
         type="checkbox"
       />
-      {{ item }}
     </div>
 
     <button @click="start">Start</button>
     <button @click="next">Next</button>
+    <button @click="reload">Reload</button>
 
     <div>associationItems: {{ associationItems.length }}</div>
     <div>suggestionItems: {{ suggestionItems.length }}</div>
@@ -88,16 +89,25 @@
   const hasLinks = (item: IItem | null, count: number = 1) =>
     item && (associationLinks.value[item.id]?.length || 0) >= count
 
-  const associationItems = computed(() =>
-    Object.values(associationMap.value)
-      .filter((item) => hasLinks(item, suggestionCountRange.value.min))
-      .sort(randomSort)
-      .splice(0, props.config.associations.count),
+  const allAssociationItems = computed(() =>
+    Object.values(associationMap.value).filter((item) =>
+      hasLinks(item, suggestionCountRange.value.min),
+    ),
   )
+
+  const associationItems = ref<IItem[]>([])
+
+  const reloadAssociations = () =>
+    (associationItems.value = allAssociationItems.value
+      .sort(randomSort)
+      .splice(0, props.config.associations.count))
 
   const suggestionItems = computed(() => Object.values(suggestionMap.value))
 
-  const association = ref<IItem | null>()
+  const index = ref(-1)
+  const association = computed<IItem | null>(
+    () => associationItems.value[index.value],
+  )
   const suggestions = ref<IItem[]>([])
   const selectedSuggestions = ref<SelectedItemUI>({})
   const selectedItems = computed<IItem[]>(() =>
@@ -108,7 +118,17 @@
   const rightResult = ref<IItem[]>([])
 
   const start = () => {
+    reloadAssociations()
     next()
+  }
+  const again = () => {
+    index.value = -1
+    clear()
+  }
+
+  const reload = () => {
+    reloadAssociations()
+    again()
   }
 
   const clear = () => {
@@ -117,7 +137,7 @@
   }
 
   const next = () => {
-    association.value = associationItems.value.pop()
+    index.value += 1
     console.log(validate(rightResult.value, selectedItems.value))
 
     if (association.value) {
@@ -144,13 +164,15 @@
 
       suggestions.value?.sort(randomSort)
     } else {
-      clear()
+      again()
     }
   }
 
   const hotkey = (event: KeyboardEvent) => {
     if (event.code === 'KeyS') start()
     if (event.code === 'KeyN') next()
+    if (event.code === 'KeyR') reload()
+    if (event.code === 'KeyA') again()
   }
 
   onMounted(() => window.addEventListener('keydown', hotkey))
