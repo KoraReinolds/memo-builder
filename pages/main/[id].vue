@@ -47,7 +47,7 @@
 
   const memoSettings: IMemoConfig = {
     associations: { count: 1, listId: 1 },
-    suggestions: { count: 4, listId: 2 },
+    suggestions: { count: 1, listId: 2 },
   }
 
   const {

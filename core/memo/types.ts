@@ -3,9 +3,14 @@ interface IAssociationSettings {
   count: number
 }
 
+export interface ICountRange {
+  min: number
+  max: number
+}
+
 interface ISuggestionSettings {
   listId: number
-  count: number
+  count: number | ICountRange
 }
 
 export interface IMemoConfig {

@@ -2,14 +2,19 @@
   <div>
     <div>{{ association }}</div>
     <div>{{ suggestions }}</div>
+
     <button @click="start">Start</button>
+
+    <div>associationItems: {{ associationItems.length }}</div>
+    <div>suggestionItems: {{ suggestionItems.length }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
   import type { IItem } from '~/core/items/types'
-  import type { IMemoConfig } from '~/core/memo/types'
+  import type { ICountRange, IMemoConfig } from '~/core/memo/types'
   import { randomSort } from '~/lib'
+  import { isNumber } from '~/server/typeGuards'
 
   const props = defineProps<{
     items: IItem[]
@@ -17,7 +22,17 @@
     config: IMemoConfig
   }>()
 
-  const associationMap = computed(() =>
+  const suggestionCountRange = computed<ICountRange>(() => {
+    const count = props.config.suggestions.count
+    return isNumber(count)
+      ? {
+          min: count,
+          max: count,
+        }
+      : count
+  })
+
+  const itemsMap = computed(() =>
     Object.fromEntries(props.items.map((item) => [item.id, item])),
   )
 
@@ -27,9 +42,37 @@
   const isSuggestionItem = (item: IItem | null) =>
     item && item.listId === props.config.suggestions.listId
 
-  const associationItems = computed(() =>
-    props.items.filter(isAssociationItem).sort(randomSort),
+  const mapItems = (items: IItem[]) =>
+    Object.fromEntries(items.map((item) => [item.id, item]))
+
+  const associationMap = computed(() =>
+    mapItems(props.items.filter(isAssociationItem)),
   )
+
+  const suggestionMap = computed(() =>
+    mapItems(props.items.filter(isSuggestionItem)),
+  )
+
+  const getSuggestionById = (id: number) => suggestionMap.value[id]
+
+  const associationLinks = computed(() =>
+    Object.fromEntries(
+      Object.entries(props.links).map(([id, links]) => [
+        id,
+        links.filter(getSuggestionById),
+      ]),
+    ),
+  )
+  const hasLinks = (item: IItem | null, count: number = 1) =>
+    item && (associationLinks.value[item.id]?.length || 0) > count
+
+  const associationItems = computed(() =>
+    Object.values(associationMap.value)
+      .filter((item) => hasLinks(item, suggestionCountRange.value.min))
+      .sort(randomSort),
+  )
+
+  const suggestionItems = computed(() => Object.values(suggestionMap.value))
 
   const association = ref<IItem | null>()
   const suggestions = ref<IItem[] | null>()
@@ -37,9 +80,8 @@
   const start = () => {
     association.value = associationItems.value.pop()
     if (association.value) {
-      suggestions.value = props.links[association.value.id]
-        ?.map((id) => associationMap.value[id])
-        .filter(isSuggestionItem)
+      const associatedLinks = associationLinks.value[association.value.id]
+      suggestions.value = associatedLinks?.map((id) => itemsMap.value[id])
     }
   }
 
