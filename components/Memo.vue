@@ -4,6 +4,7 @@
     <div>{{ suggestions }}</div>
 
     <button @click="start">Start</button>
+    <button @click="next">Next</button>
 
     <div>associationItems: {{ associationItems.length }}</div>
     <div>suggestionItems: {{ suggestionItems.length }}</div>
@@ -64,12 +65,13 @@
     ),
   )
   const hasLinks = (item: IItem | null, count: number = 1) =>
-    item && (associationLinks.value[item.id]?.length || 0) > count
+    item && (associationLinks.value[item.id]?.length || 0) >= count
 
   const associationItems = computed(() =>
     Object.values(associationMap.value)
       .filter((item) => hasLinks(item, suggestionCountRange.value.min))
-      .sort(randomSort),
+      .sort(randomSort)
+      .splice(0, props.config.associations.count),
   )
 
   const suggestionItems = computed(() => Object.values(suggestionMap.value))
@@ -78,15 +80,25 @@
   const suggestions = ref<IItem[] | null>()
 
   const start = () => {
+    next()
+  }
+
+  const next = () => {
     association.value = associationItems.value.pop()
     if (association.value) {
       const associatedLinks = associationLinks.value[association.value.id]
-      suggestions.value = associatedLinks?.map((id) => itemsMap.value[id])
+      suggestions.value = associatedLinks
+        ?.sort(randomSort)
+        .splice(0, suggestionCountRange.value.max)
+        .map((id) => itemsMap.value[id])
+    } else {
+      suggestions.value = null
     }
   }
 
   const hotkey = (event: KeyboardEvent) => {
     if (event.code === 'KeyS') start()
+    if (event.code === 'KeyN') next()
   }
 
   onMounted(() => window.addEventListener('keydown', hotkey))
