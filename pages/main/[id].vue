@@ -17,15 +17,6 @@
     </div>
     <CreateNewList @new-list="createNewList" />
   </div>
-  <div>
-    {{ newSelectedItems }}
-  </div>
-  <div>
-    {{ selectedItems }}
-  </div>
-  <div>
-    {{ newSelectedIds }}
-  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,7 @@
 import type { IItem } from '~/core/items/types'
 
-export const useItem = (listId: number) => {
-  const items = ref<IItem[] | null>(null)
+export const useItem = defineStore('items', () => {
+  const items = ref<IItem[]>([])
 
   const getItemsByListId = async (listId: number) => {
     const { data, error } = await useFetch(
@@ -12,7 +12,8 @@ export const useItem = (listId: number) => {
       console.warn(`${getItemsByListId.name} error`, error.value)
     }
 
-    return data.value
+    const newItems = (data.value || []).map((item) => ({ ...item, listId }))
+    newItems.forEach((item) => items.value.push(item))
   }
 
   const addItem = (item: IItem | null) => {
@@ -49,16 +50,10 @@ export const useItem = (listId: number) => {
     removeItemById(id)
   }
 
-  getItemsByListId(listId).then(
-    (dbItems) =>
-      (items.value = dbItems
-        ? dbItems.map((item) => ({ ...item, listId }))
-        : null),
-  )
-
   return {
     items,
     createNewItem,
     removeItem,
+    getItemsByListId,
   }
-}
+})

@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     ['@nuxtjs/eslint-module', {}],
     '@nuxtjs/tailwindcss',
     'nuxt-vitest',
+    '@pinia/nuxt',
   ],
   routeRules: {
     '/main/**': { ssr: false },

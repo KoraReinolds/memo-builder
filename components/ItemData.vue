@@ -8,7 +8,7 @@
         <button @click="$emit('removeList')">Del</button>
       </div>
       <div
-        v-for="item in items"
+        v-for="item in listItems"
         :key="item.id"
         :class="{ 'bg-lime-500': isHighlight(item.id) }"
       >
@@ -64,7 +64,13 @@
     'update:modelValue': [selected: Record<string, boolean>]
   }>()
 
-  const { items, createNewItem, removeItem } = useItem(props.listId)
+  const { items, createNewItem, removeItem, getItemsByListId } = useItem()
+
+  getItemsByListId(props.listId)
+
+  const listItems = computed(() =>
+    items.filter(({ listId }) => listId === props.listId),
+  )
 
   const selected = computed({
     get() {
