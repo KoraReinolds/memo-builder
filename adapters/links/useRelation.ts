@@ -3,7 +3,13 @@ import type { Links } from '~/core/links/types'
 import type { RelationPair } from '~/db/relations'
 
 export const useRelation = (groupId: number) => {
-  const links = ref<Links>(new Map())
+  const _links = ref<Links>(new Map())
+
+  const links = computed<Record<string, number[]>>(() =>
+    Object.fromEntries(
+      [..._links.value.entries()].map(([id, set]) => [id, [...set]]),
+    ),
+  )
 
   const addLinksByItemsIds = async (ids: number[]) => {
     const params = new URLSearchParams()
@@ -40,15 +46,15 @@ export const useRelation = (groupId: number) => {
 
   const removeRelations = (pairs: RelationPair[]) => {
     pairs.forEach(([key, val]) => {
-      links.value.get(key)?.delete(val)
-      links.value.get(val)?.delete(key)
+      _links.value.get(key)?.delete(val)
+      _links.value.get(val)?.delete(key)
     })
   }
 
   const addRelations = (pairs: RelationPair[] | null) => {
     if (!pairs) return
 
-    const res = links.value
+    const res = _links.value
 
     pairs?.forEach(([first, second]) => {
       addRelation(res, first, second)

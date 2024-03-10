@@ -17,23 +17,38 @@
     </div>
     <CreateNewList @new-list="createNewList" />
   </div>
+  <hr />
+  <Memo
+    :items="items"
+    :links="links"
+    :config="memoSettings"
+  ></Memo>
 </template>
 
 <script setup lang="ts">
+  import { useItem } from '~/adapters/items/useItem'
   import {
     useSelectedItems,
     type SelectedItemUI,
   } from '~/adapters/items/useSelectedItems'
   import { useRelation } from '~/adapters/links/useRelation'
   import { useList } from '~/adapters/lists/useList'
+  import type { IMemoConfig } from '~/core/memo/types'
 
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
+
+  const { items } = useItem()
 
   const { lists, createNewList, removeList } = useList(groupId)
 
   const { links, getNewLinks, getRemovedLinks, createLinks, removeLinks } =
     useRelation(groupId)
+
+  const memoSettings: IMemoConfig = {
+    associations: { count: 1, listId: 1 },
+    suggestions: { count: 4, listId: 2 },
+  }
 
   const {
     newSelectedIds,
@@ -44,9 +59,9 @@
 
   const selectedItemId = ref<number | null>(null)
 
-  const associatedLinks = computed(() => [
-    ...(links.value?.get(selectedItemId.value || -1) || []),
-  ])
+  const associatedLinks = computed(
+    () => links.value[`${selectedItemId.value}`] || [],
+  )
 
   const selectedItems = computed<SelectedItemUI>(() =>
     idsListToSelectedAdapter(associatedLinks.value),
