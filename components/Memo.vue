@@ -14,6 +14,7 @@
 <script setup lang="ts">
   import type { IItem } from '~/core/items/types'
   import type { ICountRange, IMemoConfig } from '~/core/memo/types'
+  import { getRandomValueFromRange } from '~/db/lib'
   import { randomSort } from '~/lib'
   import { isNumber } from '~/server/typeGuards'
 
@@ -87,10 +88,22 @@
     association.value = associationItems.value.pop()
     if (association.value) {
       const associatedLinks = associationLinks.value[association.value.id]
+
+      if (!associatedLinks) return
+
+      const rightLinks = getRandomValueFromRange(suggestionCountRange.value)
       suggestions.value = associatedLinks
-        ?.sort(randomSort)
-        .splice(0, suggestionCountRange.value.max)
+        .sort(randomSort)
+        .slice(0, rightLinks)
         .map((id) => itemsMap.value[id])
+      const extraLinks = props.config.suggestions.totalCount - rightLinks
+      suggestionItems.value
+        .filter((item) => !associatedLinks.includes(item.id))
+        .sort(randomSort)
+        .slice(0, extraLinks)
+        .forEach((item) => suggestions.value?.push(item))
+
+      suggestions.value.sort(randomSort)
     } else {
       suggestions.value = null
     }

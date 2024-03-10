@@ -11,6 +11,7 @@ export interface ICountRange {
 interface ISuggestionSettings {
   listId: number
   count: number | ICountRange
+  totalCount: number
 }
 
 export interface IMemoConfig {

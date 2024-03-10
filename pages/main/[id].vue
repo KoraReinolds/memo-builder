@@ -46,8 +46,8 @@
     useRelation(groupId)
 
   const memoSettings: IMemoConfig = {
-    associations: { count: 5, listId: 1 },
-    suggestions: { count: { min: 1, max: 3 }, listId: 2 },
+    associations: { count: 5, listId: 14 },
+    suggestions: { count: { min: 1, max: 2 }, listId: 13, totalCount: 4 },
   }
 
   const {
