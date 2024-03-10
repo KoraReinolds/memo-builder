@@ -1,7 +1,21 @@
 <template>
   <div>
+    {{ selectedSuggestions }}
     <div>{{ association }}</div>
-    <div>{{ suggestions }}</div>
+    <div
+      v-for="item in suggestions"
+      :key="item.id"
+    >
+      <label :for="`memo-${item.id}`">
+        <ResizedInput v-model="item.data" />
+      </label>
+      <input
+        :id="`memo-${item.id}`"
+        v-model="selectedSuggestions[item.id]"
+        type="checkbox"
+      />
+      {{ item }}
+    </div>
 
     <button @click="start">Start</button>
     <button @click="next">Next</button>
@@ -12,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+  import type { SelectedItemUI } from '~/adapters/items/useSelectedItems'
   import type { IItem } from '~/core/items/types'
   import type { ICountRange, IMemoConfig } from '~/core/memo/types'
   import { getRandomValueFromRange } from '~/db/lib'
@@ -33,6 +48,13 @@
         }
       : count
   })
+
+  const toString = (items: IItem[]) =>
+    JSON.stringify(items.sort().map((item) => item.id))
+
+  const validate =
+    props.config.validator ||
+    ((items: IItem[], result: IItem[]) => toString(items) === toString(result))
 
   const isAssociationItem = (item: IItem | null) =>
     item && item.listId === props.config.associations.listId
@@ -76,24 +98,43 @@
   const suggestionItems = computed(() => Object.values(suggestionMap.value))
 
   const association = ref<IItem | null>()
-  const suggestions = ref<IItem[] | null>()
+  const suggestions = ref<IItem[]>([])
+  const selectedSuggestions = ref<SelectedItemUI>({})
+  const selectedItems = computed<IItem[]>(() =>
+    Object.entries(selectedSuggestions.value)
+      .filter(([_, res]) => !!res)
+      .map(([id]) => itemsMap.value[id]),
+  )
+  const rightResult = ref<IItem[]>([])
 
   const start = () => {
     next()
   }
 
+  const clear = () => {
+    suggestions.value = []
+    selectedSuggestions.value = {}
+  }
+
   const next = () => {
     association.value = associationItems.value.pop()
+    console.log(validate(rightResult.value, selectedItems.value))
+
     if (association.value) {
       const associatedLinks = associationLinks.value[association.value.id]
 
       if (!associatedLinks) return
 
+      clear()
+
       const rightLinks = getRandomValueFromRange(suggestionCountRange.value)
-      suggestions.value = associatedLinks
+      rightResult.value = associatedLinks
         .sort(randomSort)
         .slice(0, rightLinks)
         .map((id) => itemsMap.value[id])
+
+      rightResult.value.forEach((item) => suggestions.value?.push(item))
+
       const extraLinks = props.config.suggestions.totalCount - rightLinks
       suggestionItems.value
         .filter((item) => !associatedLinks.includes(item.id))
@@ -101,9 +142,9 @@
         .slice(0, extraLinks)
         .forEach((item) => suggestions.value?.push(item))
 
-      suggestions.value.sort(randomSort)
+      suggestions.value?.sort(randomSort)
     } else {
-      suggestions.value = null
+      clear()
     }
   }
 

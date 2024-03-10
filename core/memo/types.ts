@@ -1,3 +1,5 @@
+import type { IItem } from '../items/types'
+
 interface IAssociationSettings {
   listId: number
   count: number
@@ -14,8 +16,10 @@ interface ISuggestionSettings {
   totalCount: number
 }
 
+export type Validator = (items: IItem[], result: IItem[]) => boolean
+
 export interface IMemoConfig {
   associations: IAssociationSettings
   suggestions: ISuggestionSettings
-  validator?: (answer: string) => boolean
+  validator?: Validator
 }

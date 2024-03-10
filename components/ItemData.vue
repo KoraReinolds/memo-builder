@@ -12,11 +12,11 @@
         :key="item.id"
         :class="{ 'bg-lime-500': isHighlight(item.id) }"
       >
-        <label :for="`${item.id}`">
+        <label :for="`item-data-${item.id}`">
           <ResizedInput v-model="item.data" />
         </label>
         <input
-          :id="`${item.id}`"
+          :id="`item-data-${item.id}`"
           v-model="selected[item.id]"
           type="checkbox"
           @change="$emit('selectItem', item.id)"
