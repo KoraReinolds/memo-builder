@@ -34,10 +34,6 @@
       : count
   })
 
-  const itemsMap = computed(() =>
-    Object.fromEntries(props.items.map((item) => [item.id, item])),
-  )
-
   const isAssociationItem = (item: IItem | null) =>
     item && item.listId === props.config.associations.listId
 
@@ -46,6 +42,8 @@
 
   const mapItems = (items: IItem[]) =>
     Object.fromEntries(items.map((item) => [item.id, item]))
+
+  const itemsMap = computed(() => mapItems(props.items))
 
   const associationMap = computed(() =>
     mapItems(props.items.filter(isAssociationItem)),
