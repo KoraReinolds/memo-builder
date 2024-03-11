@@ -23,3 +23,6 @@ logs
 .docker_env
 .env.*
 !.env.example
+
+# database
+/database
