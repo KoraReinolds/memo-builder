@@ -3,7 +3,7 @@ version: '3.9'
 services:
   postgres-db:
     container_name: ${PROJECT_NAME}-postgres-db
-    image: postgres:alpine
+    image: postgres:latest
     hostname: postgres
     restart: always
     env_file:

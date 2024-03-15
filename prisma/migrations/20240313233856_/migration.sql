@@ -22,6 +22,7 @@ CREATE TABLE "List" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "groupId" INTEGER NOT NULL,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "List_pkey" PRIMARY KEY ("id")
 );
@@ -38,6 +39,7 @@ CREATE TABLE "Item" (
 CREATE TABLE "Chain" (
     "_id" SERIAL NOT NULL,
     "listId" INTEGER NOT NULL,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Chain_pkey" PRIMARY KEY ("_id")
 );
@@ -55,6 +57,7 @@ CREATE TABLE "ChainRelation" (
     "id" SERIAL NOT NULL,
     "chainId" INTEGER NOT NULL,
     "relatedId" INTEGER NOT NULL,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "ChainRelation_pkey" PRIMARY KEY ("id")
 );

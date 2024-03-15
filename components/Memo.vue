@@ -169,6 +169,12 @@
   }
 
   const hotkey = (event: KeyboardEvent) => {
+    console.log(event)
+    if (event.ctrlKey || event.shiftKey) {
+      event.preventDefault() // Prevent the default browser behavior
+      // Your custom logic for the hotkey goes here
+      console.log('Custom action for Ctrl + Shift + A')
+    }
     if (event.code === 'KeyS') start()
     if (event.code === 'KeyN') next()
     if (event.code === 'KeyR') reload()
