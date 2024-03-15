@@ -28,8 +28,9 @@
 
 <script setup lang="ts">
   import type { SelectedItemUI } from '~/adapters/items/useSelectedItems'
+  import { useKeyboard } from '~/adapters/keyboard/useKeyboard'
   import type { IItem } from '~/core/items/types'
-  import type { ICountRange, IMemoConfig } from '~/core/memo/types'
+  import type { ICountRange, IMemoConfig, Validator } from '~/core/memo/types'
   import { getRandomValueFromRange } from '~/db/lib'
   import { randomSort } from '~/lib'
   import { isNumber } from '~/server/typeGuards'
@@ -53,9 +54,10 @@
   const toString = (items: IItem[]) =>
     JSON.stringify(items.sort().map((item) => item.id))
 
-  const validate =
-    props.config.validator ||
-    ((items: IItem[], result: IItem[]) => toString(items) === toString(result))
+  const defaultValidator: Validator = ({ items }, result) =>
+    toString(items) === toString(result)
+
+  const validate = props.config.validator || defaultValidator
 
   const isAssociationItem = (item: IItem | null) =>
     item && item.listId === props.config.associations.listId
@@ -117,6 +119,8 @@
   )
   const rightResult = ref<IItem[]>([])
 
+  const { pressedKeys, pressedKey } = useKeyboard()
+
   const start = () => {
     reloadAssociations()
     next()
@@ -138,7 +142,15 @@
 
   const next = () => {
     index.value += 1
-    console.log(validate(rightResult.value, selectedItems.value))
+    console.log(
+      validate(
+        {
+          items: rightResult.value,
+          keys: pressedKeys.value,
+        },
+        selectedItems.value,
+      ),
+    )
 
     if (association.value) {
       const associatedLinks = associationLinks.value[association.value.id]
@@ -168,19 +180,15 @@
     }
   }
 
-  const hotkey = (event: KeyboardEvent) => {
-    console.log(event)
-    if (event.ctrlKey || event.shiftKey) {
-      event.preventDefault() // Prevent the default browser behavior
-      // Your custom logic for the hotkey goes here
-      console.log('Custom action for Ctrl + Shift + A')
-    }
-    if (event.code === 'KeyS') start()
-    if (event.code === 'KeyN') next()
-    if (event.code === 'KeyR') reload()
-    if (event.code === 'KeyA') again()
-  }
+  watch(
+    () => pressedKey.value,
+    (pressedKey) => {
+      const { code } = pressedKey || {}
 
-  onMounted(() => window.addEventListener('keydown', hotkey))
-  onBeforeUnmount(() => window.removeEventListener('keydown', hotkey))
+      if (code === 'KeyS') start()
+      if (code === 'KeyN') next()
+      if (code === 'KeyR') reload()
+      if (code === 'KeyA') again()
+    },
+  )
 </script>

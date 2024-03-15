@@ -16,7 +16,19 @@ interface ISuggestionSettings {
   totalCount: number
 }
 
-export type Validator = (items: IItem[], result: IItem[]) => boolean
+export interface IKeyboardKey {
+  code: string
+  altKey: boolean
+  shiftKey: boolean
+  ctrlKey: boolean
+}
+
+export interface IInputData {
+  items: IItem[]
+  keys: IKeyboardKey[]
+}
+
+export type Validator = (inputData: IInputData, result: IItem[]) => boolean
 
 export interface IMemoConfig {
   associations: IAssociationSettings
