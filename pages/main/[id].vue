@@ -6,7 +6,6 @@
       :key="itemList.id"
     >
       <ItemData
-        v-if="newSelectedItems[itemList.id]"
         v-model="newSelectedItems[itemList.id]"
         :name="itemList.name"
         :selected-items="selectedItems"
@@ -19,6 +18,7 @@
   </div>
   <hr />
   <Memo
+    v-if="memoSettings"
     :items="items"
     :links="links"
     :config="memoSettings"
@@ -45,14 +45,18 @@
   const { links, getNewLinks, getRemovedLinks, createLinks, removeLinks } =
     useRelation(groupId)
 
-  const memoSettings = computed<IMemoConfig>(() => ({
-    associations: { count: 5, listId: lists.value?.[0].id || 0 },
-    suggestions: {
-      count: { min: 1, max: 2 },
-      listId: lists.value?.[1].id || 0,
-      totalCount: 4,
-    },
-  }))
+  const memoSettings = computed<IMemoConfig | undefined>(() =>
+    lists.value && lists.value.length > 1
+      ? {
+          associations: { count: 5, listId: lists.value?.[0].id || 0 },
+          suggestions: {
+            count: { min: 1, max: 2 },
+            listId: lists.value?.[1].id || 0,
+            totalCount: 4,
+          },
+        }
+      : undefined,
+  )
 
   const {
     newSelectedIds,

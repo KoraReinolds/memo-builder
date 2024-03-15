@@ -9,7 +9,7 @@ export const useKeyboard = () => {
     const { code, ctrlKey, shiftKey, altKey } = event
 
     if (ctrlKey || shiftKey) {
-      event.preventDefault() // Prevent the default browser behavior
+      // event.preventDefault() // Prevent the default browser behavior
     }
 
     if (isPressed.value) return
