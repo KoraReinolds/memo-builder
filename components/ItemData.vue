@@ -13,6 +13,7 @@
         :class="{ 'bg-lime-500': isHighlight(item.id) }"
       >
         <label :for="`item-data-${item.id}`">
+          {{ item.id }}
           <ResizedInput v-model="item.data" />
         </label>
         <input
@@ -35,7 +36,7 @@
 
 <script setup lang="ts">
   import type { PropType } from 'vue'
-  import { useItem } from '~/adapters/items/useItem'
+  import { useItemStore } from '~/adapters/items/useItemStore'
   import type { SelectedItemUI } from '~/adapters/items/useSelectedItems'
 
   const props = defineProps({
@@ -64,7 +65,7 @@
     'update:modelValue': [selected: Record<string, boolean>]
   }>()
 
-  const { items, createNewItem, removeItem, getItemsByListId } = useItem()
+  const { items, createNewItem, removeItem, getItemsByListId } = useItemStore()
 
   getItemsByListId(props.listId)
 
@@ -92,3 +93,4 @@
     newItem.value = ''
   }
 </script>
+~/adapters/items/useItemStore

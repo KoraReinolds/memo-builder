@@ -23,10 +23,12 @@
     :links="links"
     :config="memoSettings"
   ></Memo>
+  <div>{{ items }}</div>
+  {{ itemsIdMap }}
 </template>
 
 <script setup lang="ts">
-  import { useItem } from '~/adapters/items/useItem'
+  import { useItemStore } from '~/adapters/items/useItemStore'
   import {
     useSelectedItems,
     type SelectedItemUI,
@@ -34,11 +36,16 @@
   import { useRelation } from '~/adapters/links/useRelation'
   import { useList } from '~/adapters/lists/useList'
   import type { IMemoConfig } from '~/core/memo/types'
+  import { fromTheSameList } from '~/useCases/items/fromTheSameList'
+  import { toIdMap } from '~/useCases/lib/pairs'
+  import { getAllPairs } from '~/useCases/links/allPairs'
 
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
 
-  const { items } = useItem()
+  const { items } = useItemStore()
+
+  const itemsIdMap = computed(() => toIdMap(items))
 
   const { lists, createNewList, removeList } = useList(groupId)
 
@@ -67,12 +74,12 @@
 
   const selectedItemId = ref<number | null>(null)
 
-  const associatedLinks = computed(
+  const associatedIds = computed(
     () => links.value[`${selectedItemId.value}`] || [],
   )
 
   const selectedItems = computed<SelectedItemUI>(() =>
-    idsListToSelectedAdapter(associatedLinks.value),
+    idsListToSelectedAdapter(associatedIds.value),
   )
 
   const cancelSeleting = () => {
@@ -90,32 +97,36 @@
     }
   }
 
-  const saveChanges = () => {
+  const saveNewLinks = () => {
+    const newLinks = getNewLinks(newSelectedIds.value, associatedIds.value)
+
+    const newPairs = getAllPairs(newLinks).filter((pair) =>
+      fromTheSameList(pair, itemsIdMap.value),
+    )
+
+    if (newPairs.length) createLinks(newPairs)
+  }
+
+  const saveRemovedLinks = () => {
     if (!selectedItemId.value) return
 
     const removedLinks = getRemovedLinks(
-      associatedLinks.value,
+      associatedIds.value,
       newSelectedIds.value,
     )
+    removedLinks.push(selectedItemId.value)
 
-    const newLinks = getNewLinks(newSelectedIds.value, associatedLinks.value)
+    const deletedPairs = getAllPairs(removedLinks).filter((pair) =>
+      fromTheSameList(pair, itemsIdMap.value),
+    )
+    if (deletedPairs.length) removeLinks(deletedPairs)
+  }
 
-    const idToPairs = (rootId: number, listId: number[]) => {
-      const linksPairs: [number, number][] = []
-      listId
-        .filter((id) => id !== rootId)
-        .forEach((id) => {
-          linksPairs.push([id, rootId])
-        })
-      return linksPairs
-    }
+  const saveChanges = () => {
+    if (!selectedItemId.value) return
 
-    const newLinksPairs = idToPairs(selectedItemId.value, newLinks)
-    if (newLinksPairs.length) createLinks(newLinksPairs)
-
-    const deletedLinksPairs = idToPairs(selectedItemId.value, removedLinks)
-    if (deletedLinksPairs.length) removeLinks(deletedLinksPairs)
-
+    saveNewLinks()
+    saveRemovedLinks()
     cancelSeleting()
   }
 </script>

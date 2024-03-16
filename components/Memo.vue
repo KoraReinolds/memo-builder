@@ -32,8 +32,9 @@
   import type { IItem } from '~/core/items/types'
   import type { ICountRange, IMemoConfig, Validator } from '~/core/memo/types'
   import { getRandomValueFromRange } from '~/db/lib'
-  import { randomSort } from '~/lib'
   import { isNumber } from '~/server/typeGuards'
+  import { toIdMap } from '~/useCases/lib/pairs'
+  import { randomSort } from '~/useCases/lib/randomSort'
 
   const props = defineProps<{
     items: IItem[]
@@ -65,17 +66,14 @@
   const isSuggestionItem = (item: IItem | null) =>
     item && item.listId === props.config.suggestions.listId
 
-  const mapItems = (items: IItem[]) =>
-    Object.fromEntries(items.map((item) => [item.id, item]))
-
-  const itemsMap = computed(() => mapItems(props.items))
+  const itemsIdMap = computed(() => toIdMap(props.items))
 
   const associationMap = computed(() =>
-    mapItems(props.items.filter(isAssociationItem)),
+    toIdMap(props.items.filter(isAssociationItem)),
   )
 
   const suggestionMap = computed(() =>
-    mapItems(props.items.filter(isSuggestionItem)),
+    toIdMap(props.items.filter(isSuggestionItem)),
   )
 
   const getSuggestionById = (id: number) => suggestionMap.value[id]
@@ -115,7 +113,7 @@
   const selectedItems = computed<IItem[]>(() =>
     Object.entries(selectedSuggestions.value)
       .filter(([_, res]) => !!res)
-      .map(([id]) => itemsMap.value[id]),
+      .map(([id]) => itemsIdMap.value[id]),
   )
   const rightResult = ref<IItem[]>([])
 
@@ -163,7 +161,7 @@
       rightResult.value = associatedLinks
         .sort(randomSort)
         .slice(0, rightLinks)
-        .map((id) => itemsMap.value[id])
+        .map((id) => itemsIdMap.value[id])
 
       rightResult.value.forEach((item) => suggestions.value?.push(item))
 
@@ -192,3 +190,4 @@
     },
   )
 </script>
+~/useCases/lib/randomSort

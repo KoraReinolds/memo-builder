@@ -1,6 +1,6 @@
 import type { IItem } from '~/core/items/types'
 
-export const useItem = defineStore('items', () => {
+export const useItemStore = defineStore('items', () => {
   const items = ref<IItem[]>([])
 
   const getItemsByListId = async (listId: number) => {
@@ -52,8 +52,10 @@ export const useItem = defineStore('items', () => {
 
   return {
     items,
+    getItemsByListId,
+    addItem,
+    removeItemById,
     createNewItem,
     removeItem,
-    getItemsByListId,
   }
 })
