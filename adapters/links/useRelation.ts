@@ -1,15 +1,13 @@
-import { difference, intersection } from 'ramda'
+import { difference, intersection, map } from 'ramda'
 import type { Links } from '~/core/links/types'
 import type { RelationPair } from '~/db/relations'
 
 export const useRelation = (groupId: number) => {
-  const _links = ref<Links>(new Map())
+  type NotRepeatableLinks = Record<number, Set<number>>
 
-  const links = computed<Record<string, number[]>>(() =>
-    Object.fromEntries(
-      [..._links.value.entries()].map(([id, set]) => [id, [...set]]),
-    ),
-  )
+  const _links = ref<NotRepeatableLinks>({})
+
+  const links = computed<Links>(() => map((v) => [...v], _links.value))
 
   const addLinksByItemsIds = async (ids: number[]) => {
     const params = new URLSearchParams()
@@ -38,16 +36,16 @@ export const useRelation = (groupId: number) => {
     return data.value
   }
 
-  const addRelation = (res: Links, key: number, val: number) => {
-    const link = res.get(key)
+  const addRelation = (res: NotRepeatableLinks, key: number, val: number) => {
+    const link = res[key]
     if (link) link.add(val)
-    else res.set(key, new Set([val]))
+    else res[key] = new Set([val])
   }
 
   const removeRelations = (pairs: RelationPair[]) => {
     pairs.forEach(([key, val]) => {
-      _links.value.get(key)?.delete(val)
-      _links.value.get(val)?.delete(key)
+      _links.value[key]?.delete(val)
+      _links.value[val]?.delete(key)
     })
   }
 
