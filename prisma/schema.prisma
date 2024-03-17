@@ -51,6 +51,7 @@ model Chain {
 model ItemChain {
   itemId  Int
   chainId Int
+  order   Int   @default(0)
   item    Item  @relation(fields: [itemId], references: [id])
   chain   Chain @relation(fields: [chainId], references: [id])
 

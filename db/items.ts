@@ -30,6 +30,7 @@ export const getItems = async (where: IGetItemsParams) => {
     include: {
       items: {
         select: {
+          order: true,
           item: {
             select: {
               data: true,
@@ -42,7 +43,10 @@ export const getItems = async (where: IGetItemsParams) => {
 
   return chainsWithItems.map(({ id, items }) => ({
     id,
-    data: items.map(({ item }) => item.data).join(' '),
+    data: items
+      .sort((a, b) => a.order - b.order)
+      .map(({ item }) => item.data)
+      .join(' '),
   }))
 }
 
@@ -52,6 +56,7 @@ export const getItem = async (where: IHasID) => {
     include: {
       items: {
         select: {
+          order: true,
           item: {
             select: {
               data: true,
@@ -64,7 +69,10 @@ export const getItem = async (where: IHasID) => {
 
   return {
     id: chainWithItems.id,
-    data: chainWithItems.items.map(({ item }) => item.data).join(' '),
+    data: chainWithItems.items
+      .sort((a, b) => a.order - b.order)
+      .map(({ item }) => item.data)
+      .join(' '),
   }
 }
 

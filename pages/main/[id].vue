@@ -23,8 +23,6 @@
     :links="links"
     :config="memoSettings"
   ></Memo>
-  <div>{{ items }}</div>
-  {{ itemsIdMap }}
 </template>
 
 <script setup lang="ts">

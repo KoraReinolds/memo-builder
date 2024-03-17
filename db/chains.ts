@@ -8,13 +8,17 @@ const prisma = new PrismaClient()
 interface ICreateChainParams {
   listId: number
   itemIds: number[]
+  // items: {
+  //   id: number
+  //   index: number
+  // }[]
 }
 
 export const getChain = async (where: IHasID) =>
   await prisma.chain.findUniqueOrThrow({ where })
 
-export const createChain = async ({ listId, itemIds }: ICreateChainParams) =>
-  await prisma.chain.create({
+export const createChain = async ({ listId, itemIds }: ICreateChainParams) => {
+  const chain = await prisma.chain.create({
     data: {
       listId,
       items: {
@@ -26,6 +30,25 @@ export const createChain = async ({ listId, itemIds }: ICreateChainParams) =>
       },
     },
   })
+
+  Promise.all(
+    itemIds.map((itemId, order) =>
+      prisma.itemChain.update({
+        where: {
+          itemId_chainId: {
+            itemId,
+            chainId: chain.id,
+          },
+        },
+        data: {
+          order,
+        },
+      }),
+    ),
+  )
+
+  return chain
+}
 
 export const deleteChain = pipe(idsArrayDelete, prisma.chain.deleteMany)
 
