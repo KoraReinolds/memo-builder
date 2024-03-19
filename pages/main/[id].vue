@@ -53,10 +53,10 @@
   const memoSettings = computed<IMemoConfig | undefined>(() =>
     lists.value && lists.value.length > 1
       ? {
-          associations: { count: 5, listId: lists.value?.[0].id || 0 },
+          associations: { count: 5, listId: lists.value?.[2].id || 0 },
           suggestions: {
             count: { min: 1, max: 2 },
-            listId: lists.value?.[1].id || 0,
+            listId: lists.value?.[0].id || 0,
             totalCount: 4,
           },
         }

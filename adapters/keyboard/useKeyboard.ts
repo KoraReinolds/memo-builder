@@ -5,14 +5,14 @@ export const useKeyboard = () => {
   const pressedKeys = ref<IKeyboardKey[]>([])
   const isPressed = ref(false)
 
+  const unpressKey = () => (isPressed.value = false)
+
   const hotkey = (event: KeyboardEvent) => {
     const { code, ctrlKey, shiftKey, altKey } = event
 
     if (ctrlKey || shiftKey) {
       // event.preventDefault() // Prevent the default browser behavior
     }
-
-    if (isPressed.value) return
 
     pressedKey.value = {
       code,
@@ -21,11 +21,21 @@ export const useKeyboard = () => {
       altKey,
     }
 
-    pressedKeys.value.push(pressedKey.value)
+    if (isPressed.value)
+      pressedKeys.value[pressedKeys.value.length - 1] = pressedKey.value
+    else pressedKeys.value.push(pressedKey.value)
+
+    isPressed.value = true
   }
 
-  onMounted(() => window.addEventListener('keydown', hotkey))
-  onBeforeUnmount(() => window.removeEventListener('keydown', hotkey))
+  onMounted(() => {
+    window.addEventListener('keydown', hotkey)
+    window.addEventListener('keyup', unpressKey)
+  })
+  onBeforeUnmount(() => {
+    window.removeEventListener('keydown', hotkey)
+    window.removeEventListener('keyup', unpressKey)
+  })
 
   return { pressedKey, pressedKeys }
 }

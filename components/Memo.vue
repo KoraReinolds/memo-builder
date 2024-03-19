@@ -23,6 +23,7 @@
 
     <div>associationItems: {{ associationItems.length }}</div>
     <div>suggestionItems: {{ suggestionItems.length }}</div>
+    <div>pressedKeys: {{ pressedKeys }}</div>
   </div>
 </template>
 
