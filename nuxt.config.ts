@@ -10,4 +10,11 @@ export default defineNuxtConfig({
   routeRules: {
     '/main/**': { ssr: false },
   },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => {
+        return tag.includes('-')
+      },
+    },
+  },
 })

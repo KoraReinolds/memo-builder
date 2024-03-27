@@ -23,9 +23,11 @@
     :links="links"
     :config="memoSettings"
   ></Memo>
+  <memo-widget />
 </template>
 
 <script setup lang="ts">
+  import { MyVueElement } from 'memo-widget'
   import { useItemStore } from '~/adapters/items/useItemStore'
   import {
     useSelectedItems,
@@ -37,6 +39,8 @@
   import { fromTheSameList } from '~/useCases/items/fromTheSameList'
   import { toIdMap } from '~/useCases/lib/pairs'
   import { getAllPairs } from '~/useCases/links/allPairs'
+
+  customElements.define('memo-widget', MyVueElement)
 
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
