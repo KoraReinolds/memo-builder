@@ -1,36 +1,53 @@
 <template>
-  <div class="flex justify-between">
-    <div>
-      <div>
-        <span>
-          {{ name }}
-        </span>
-        <UButton @click="$emit('removeList')">Del</UButton>
-      </div>
-      <div
-        v-for="item in listItems"
-        :key="item.id"
-        :class="{ 'bg-lime-500': isHighlight(item.id) }"
-      >
-        <label :for="`item-data-${item.id}`">
-          {{ item.id }}
-          <ResizedInput v-model="item.data" />
-        </label>
-        <UInput
-          :id="`item-data-${item.id}`"
-          v-model="selected[item.id]"
-          type="checkbox"
-          @change="$emit('selectItem', item.id)"
-        />
-        <UButton @click="removeItem(item.id)">Del</UButton>
-      </div>
-      <UInput
-        v-model="newItem"
-        type="text"
-        placeholder="New Item"
+  <div class="my-4 flex w-[200px] flex-col gap-2">
+    <div class="flex w-full gap-2">
+      <span
+        class="w-full"
+        v-text="name"
       />
-      <UButton @click="addNewItem">Add Item</UButton>
+      <UButton
+        color="red"
+        @click="$emit('removeList')"
+        v-text="'Del'"
+      />
     </div>
+
+    <div
+      v-for="item in listItems"
+      :key="item.id"
+      class="flex w-full gap-2"
+    >
+      <UCheckbox
+        :model-value="isHighlight(item.id)"
+        class="w-full"
+        @update:model-value="selected[item.id] = !selected[item.id]"
+        @change="$emit('selectItem', item.id)"
+      >
+        <template #label>
+          <div class="flex gap-2">
+            <span class="">{{ item.id }}</span>
+            <span
+              :class="{ 'bold italic text-green-500': isHighlight(item.id) }"
+              >{{ item.data }}</span
+            >
+          </div>
+        </template>
+      </UCheckbox>
+      <UButton
+        color="red"
+        @click="removeItem(item.id)"
+        v-text="'Del'"
+      />
+    </div>
+    <UInput
+      v-model="newItem"
+      type="text"
+      placeholder="New Item"
+    />
+    <UButton
+      @click="addNewItem"
+      v-text="'Add Item'"
+    />
   </div>
 </template>
 
@@ -85,7 +102,7 @@
   const newItem = ref('')
 
   const isHighlight = (id: number) => {
-    return +props.selectedItems[id] ^ +selected.value[id]
+    return !!(+props.selectedItems[id] ^ +selected.value[id])
   }
 
   const addNewItem = () => {
@@ -93,4 +110,3 @@
     newItem.value = ''
   }
 </script>
-~/adapters/items/useItemStore
