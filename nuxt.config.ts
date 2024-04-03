@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => {
-        return tag.includes('-')
+        return tag.includes('my-')
       },
     },
   },
