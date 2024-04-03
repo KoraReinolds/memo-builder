@@ -5,12 +5,16 @@
     @open="openGroup"
     @remove="removeGroup"
   />
-  <div>
-    <input
+  <div class="mb-2 flex gap-2">
+    <UInput
       v-model="newName"
+      class="w-[400px]"
       type="text"
     />
-    <button @click="createNewGroup(newName)">Create</button>
+    <UButton
+      @click="createNewGroup(newName)"
+      v-text="'Create'"
+    />
   </div>
   <NuxtPage />
 </template>

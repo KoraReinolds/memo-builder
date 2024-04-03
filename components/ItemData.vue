@@ -5,7 +5,7 @@
         <span>
           {{ name }}
         </span>
-        <button @click="$emit('removeList')">Del</button>
+        <UButton @click="$emit('removeList')">Del</UButton>
       </div>
       <div
         v-for="item in listItems"
@@ -16,20 +16,20 @@
           {{ item.id }}
           <ResizedInput v-model="item.data" />
         </label>
-        <input
+        <UInput
           :id="`item-data-${item.id}`"
           v-model="selected[item.id]"
           type="checkbox"
           @change="$emit('selectItem', item.id)"
         />
-        <button @click="removeItem(item.id)">Del</button>
+        <UButton @click="removeItem(item.id)">Del</UButton>
       </div>
-      <input
+      <UInput
         v-model="newItem"
         type="text"
         placeholder="New Item"
       />
-      <button @click="addNewItem">Add Item</button>
+      <UButton @click="addNewItem">Add Item</UButton>
     </div>
   </div>
 </template>

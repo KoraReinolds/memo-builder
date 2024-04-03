@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@nuxtjs/eslint-module": "^4.1.0",
-    "@nuxtjs/tailwindcss": "^6.10.3",
     "@types/node": "^20.10.6",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",

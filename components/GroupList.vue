@@ -2,11 +2,20 @@
   <div
     v-for="group in groups"
     :key="group.id"
+    class="mb-2 flex gap-2"
   >
-    <span @click="$emit('open', group.id)">
-      {{ group.name }}
-    </span>
-    <button @click="$emit('remove', group.id)">Del</button>
+    <UButton
+      class="w-[400px]"
+      color="gray"
+      variant="solid"
+      @click="$emit('open', group.id)"
+      v-text="group.name"
+    />
+    <UButton
+      color="red"
+      @click="$emit('remove', group.id)"
+      v-text="'Del'"
+    />
   </div>
 </template>
 

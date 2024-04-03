@@ -1,5 +1,5 @@
 <template>
-  <button @click="saveChanges">Save</button>
+  <UButton @click="saveChanges">Save</UButton>
   <div class="flex justify-between">
     <div
       v-for="itemList in lists"

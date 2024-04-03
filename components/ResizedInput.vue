@@ -3,7 +3,7 @@
     <span aria-hidden="true">
       {{ modelValue }}
     </span>
-    <input
+    <UInput
       ref="input"
       class="absolute right-0 w-full"
       :class="{ 'pointer-events-none': readonly }"

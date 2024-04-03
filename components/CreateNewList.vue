@@ -1,10 +1,10 @@
 <template>
   <div>
-    <input
+    <UInput
       v-model="newListName"
       type="text"
     />
-    <button @click="createNewList">Add List</button>
+    <UButton @click="createNewList">Add List</UButton>
   </div>
 </template>
 

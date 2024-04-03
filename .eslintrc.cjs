@@ -9,6 +9,7 @@ module.exports = {
     'vue/no-multiple-template-root': 'off',
     'vue/multi-word-component-names': 'off',
     'vue/no-deprecated-slot-attribute': 'off',
+    'vue/no-v-text-v-html-on-component': 'off',
     'prettier/prettier': ['error', { configFile: '.prettierrc.js' }],
     semi: ['error', 'never'],
     quotes: ['error', 'single'],

@@ -10,16 +10,16 @@
       <label :for="`memo-${item.id}`">
         <ResizedInput v-model="item.data" />
       </label>
-      <input
+      <UInput
         :id="`memo-${item.id}`"
         v-model="selectedSuggestions[item.id]"
         type="checkbox"
       />
     </div>
 
-    <button @click="start">Start</button>
-    <button @click="next">Next</button>
-    <button @click="reload">Reload</button>
+    <UButton @click="start">Start</UButton>
+    <UButton @click="next">Next</UButton>
+    <UButton @click="reload">Reload</UButton>
 
     <div>associationItems: {{ associationItems.length }}</div>
     <div>suggestionItems: {{ suggestionItems.length }}</div>

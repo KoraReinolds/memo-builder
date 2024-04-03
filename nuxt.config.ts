@@ -2,8 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
+    '@nuxt/ui',
     ['@nuxtjs/eslint-module', {}],
-    '@nuxtjs/tailwindcss',
     'nuxt-vitest',
     '@pinia/nuxt',
   ],
