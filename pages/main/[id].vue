@@ -1,5 +1,16 @@
 <template>
   <UButton @click="saveChanges">Save</UButton>
+
+  <my-widget
+    v-if="memoSettings"
+    class="mx-auto flex max-w-lg items-center justify-center"
+    :items="itemsStore.items"
+    :links="links"
+    :config="memoSettings"
+  ></my-widget>
+
+  <hr />
+
   <div class="flex justify-between">
     <div
       v-for="itemList in lists"
@@ -16,16 +27,10 @@
     </div>
     <CreateNewList @new-list="createNewList" />
   </div>
-  <hr />
-  <Memo
-    v-if="memoSettings"
-    :items="items"
-    :links="links"
-    :config="memoSettings"
-  ></Memo>
 </template>
 
 <script setup lang="ts">
+  import { Widget } from 'memo-widget'
   import { useItemStore } from '~/adapters/items/useItemStore'
   import {
     useSelectedItems,
@@ -38,12 +43,15 @@
   import { toIdMap } from '~/useCases/lib/pairs'
   import { getAllPairs } from '~/useCases/links/allPairs'
 
+  if (!customElements.get('my-widget'))
+    customElements.define('my-widget', Widget)
+
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
 
-  const { items } = useItemStore()
+  const itemsStore = useItemStore()
 
-  const itemsIdMap = computed(() => toIdMap(items))
+  const itemsIdMap = computed(() => toIdMap(itemsStore.items))
 
   const { lists, createNewList, removeList } = useList(groupId)
 
