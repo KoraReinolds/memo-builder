@@ -7,6 +7,7 @@ module.exports = {
   plugins: ['prettier'],
   rules: {
     'vue/no-multiple-template-root': 'off',
+    'no-useless-constructor': 'off',
     'vue/multi-word-component-names': 'off',
     'vue/no-deprecated-slot-attribute': 'off',
     'vue/no-v-text-v-html-on-component': 'off',
