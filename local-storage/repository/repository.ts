@@ -9,6 +9,10 @@ export abstract class ARepository<T extends IMemoDB<any>> implements IRepo<T> {
     return this.getTable().bulkGet(ids)
   }
 
+  getByGroupId(groupId: number) {
+    return this.getTable().where({ groupId }).toArray()
+  }
+
   create(items: T[]): void {
     this.getTable().bulkAdd(items)
   }

@@ -5,6 +5,7 @@ import type { IItem } from '~/db/items'
 
 export interface IMemoDB<T> {
   id?: number
+  groupId: number
   data: T
 }
 

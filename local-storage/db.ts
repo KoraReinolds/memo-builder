@@ -12,9 +12,9 @@ export class MemoDB extends Dexie implements IStorage {
   constructor() {
     super('memo')
     this.version(1).stores({
-      links: '++id, data',
-      lists: '++id, data',
-      items: '++id, data',
+      links: '++id,data,groupId',
+      lists: '++id,data,groupId',
+      items: '++id,data,groupId',
     })
   }
 }
