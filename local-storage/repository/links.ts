@@ -4,7 +4,9 @@ import type { Links } from '~/core/links/types'
 
 export class LinksRepo extends ARepository<TMemoLinksDB> {
   update(key: number, data: Links) {
-    return this.getTable().bulkUpdate([{ key, changes: { data } }])
+    return this.getTable().bulkUpdate([
+      { key, changes: { data: JSON.parse(JSON.stringify(data)) } },
+    ])
   }
 
   getTable() {

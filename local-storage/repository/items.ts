@@ -4,7 +4,9 @@ import type { IItem } from '~/db/items'
 
 export class ItemsRepo extends ARepository<TMemoItemsDB> {
   update(key: number, data: IItem[]) {
-    return this.getTable().bulkUpdate([{ key, changes: { data } }])
+    return this.getTable().bulkUpdate([
+      { key, changes: { data: JSON.parse(JSON.stringify(data)) } },
+    ])
   }
 
   getTable() {

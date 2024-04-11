@@ -4,7 +4,9 @@ import type { IList } from '~/core/lists/types'
 
 export class ListsRepo extends ARepository<TMemoListsDB> {
   update(key: number, data: IList[]) {
-    return this.getTable().bulkUpdate([{ key, changes: { data } }])
+    return this.getTable().bulkUpdate([
+      { key, changes: { data: JSON.parse(JSON.stringify(data)) } },
+    ])
   }
 
   getTable() {
