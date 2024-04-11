@@ -1,6 +1,10 @@
 import { difference, intersection, map } from 'ramda'
 import type { Links } from '~/core/links/types'
 import type { RelationPair } from '~/db/relations'
+import { db } from '~/local-storage/db'
+import { LinksRepo } from '~/local-storage/repository/links'
+
+const repo = new LinksRepo(db)
 
 export const useRelation = (groupId: number) => {
   type NotRepeatableLinks = Record<number, Set<number>>
@@ -8,6 +12,11 @@ export const useRelation = (groupId: number) => {
   const _links = ref<NotRepeatableLinks>({})
 
   const links = computed<Links>(() => map((v) => [...v], _links.value))
+
+  watch(
+    () => links.value,
+    (links) => repo.sync(groupId, links),
+  )
 
   const addLinksByItemsIds = async (ids: number[]) => {
     const params = new URLSearchParams()

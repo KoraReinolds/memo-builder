@@ -42,6 +42,8 @@
   import { fromTheSameList } from '~/useCases/items/fromTheSameList'
   import { toIdMap } from '~/useCases/lib/pairs'
   import { getAllPairs } from '~/useCases/links/allPairs'
+  import { db } from '~/local-storage/db'
+  import { ItemsRepo } from '~/local-storage/repository/items'
 
   if (!customElements.get('my-widget'))
     customElements.define('my-widget', Widget)
@@ -50,6 +52,16 @@
   const groupId = +router.currentRoute.value.params.id
 
   const itemsStore = useItemStore()
+
+  const repo = new ItemsRepo(db)
+
+  const items = computed(() => itemsStore.items)
+
+  watch(
+    () => items.value,
+    () => repo.sync(groupId, items.value),
+    { immediate: true },
+  )
 
   const itemsIdMap = computed(() => toIdMap(itemsStore.items))
 

@@ -1,7 +1,16 @@
 import type { IList } from '~/core/lists/types'
+import { db } from '~/local-storage/db'
+import { ListsRepo } from '~/local-storage/repository/lists'
+
+const repo = new ListsRepo(db)
 
 export const useList = (groupId: number) => {
   const lists = ref<IList[] | null>(null)
+
+  watch(
+    () => lists.value,
+    (lists) => repo.sync(groupId, lists),
+  )
 
   const addList = (list: IList | null) => {
     if (list && lists.value) lists.value.push(list)
@@ -47,7 +56,14 @@ export const useList = (groupId: number) => {
     removeListById(id)
   }
 
-  getListsByGroupId(groupId).then((res) => (lists.value = res))
+  const mapToList = ({ id, name }: { id: number; name: string }) => ({
+    id,
+    name,
+  })
+
+  getListsByGroupId(groupId).then(
+    (res) => (lists.value = res?.map(mapToList) || null),
+  )
 
   return {
     lists,

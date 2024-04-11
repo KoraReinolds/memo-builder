@@ -13,6 +13,8 @@ export abstract class ARepository<T extends IMemoDB<any>> implements IRepo<T> {
     this.getTable().bulkAdd(JSON.parse(JSON.stringify(items)))
   }
 
+  abstract sync(groupId: number, items: TGetDBType<T>): Promise<void>
+
   abstract update(key: number, data: TGetDBType<T>): Promise<number>
 
   abstract getTable(): EntityTable<T, 'id'>

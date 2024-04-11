@@ -9,6 +9,13 @@ export class ItemsRepo extends ARepository<TMemoItemsDB> {
     ])
   }
 
+  async sync(groupId: number, items?: IItem[] | null): Promise<void> {
+    if (!items) return
+    const item = (await this.getByGroupId(groupId))[0]
+    if (item) this.update(item.id, items)
+    else this.create([{ groupId, data: items }])
+  }
+
   getTable() {
     return this.db.items
   }
