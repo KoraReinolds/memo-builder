@@ -1,21 +1,19 @@
-import type { Table } from 'dexie'
-import type { IMemoDB, IStorage } from '../types'
+import type { EntityTable, InsertType } from 'dexie'
+import type { IMemoDB, IStorage, TGetDBType } from '../types'
 import type { IRepo } from './types'
 
 export abstract class ARepository<T extends IMemoDB<any>> implements IRepo<T> {
   constructor(protected db: IStorage) {}
 
-  getByid(ids: number[]) {
-    return this.getTable().bulkGet(ids)
-  }
-
   getByGroupId(groupId: number) {
     return this.getTable().where({ groupId }).toArray()
   }
 
-  create(items: T[]): void {
-    this.getTable().bulkAdd(items)
+  create(items: InsertType<T, 'id'>[]): void {
+    this.getTable().bulkAdd(JSON.parse(JSON.stringify(items)))
   }
 
-  abstract getTable(): Table<T>
+  abstract update(key: number, data: TGetDBType<T>): Promise<number>
+
+  abstract getTable(): EntityTable<T, 'id'>
 }
