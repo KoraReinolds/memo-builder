@@ -14,14 +14,53 @@ interface IItemCreateParams extends IItem {
   listId: number
 }
 
-interface IGetItemsParams
+interface IGetItemsByGroupIdParams
+  extends Partial<
+    IHasID & {
+      groupId: number
+    }
+  > {}
+
+interface IGetItemsByListIdParams
   extends Partial<
     IHasID & {
       listId: number
     }
   > {}
 
-export const getItems = async (where: IGetItemsParams) => {
+export const getItemsByGroupId = async (where: IGetItemsByGroupIdParams) => {
+  const chainsWithItems = await prisma.chain.findMany({
+    where: {
+      list: {
+        groupId: where.groupId,
+      },
+      deleted: false,
+    },
+    include: {
+      items: {
+        select: {
+          order: true,
+          item: {
+            select: {
+              data: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return chainsWithItems.map(({ id, items, listId }) => ({
+    id,
+    listId,
+    data: items
+      .sort((a, b) => a.order - b.order)
+      .map(({ item }) => item.data)
+      .join(' '),
+  }))
+}
+
+export const getItems = async (where: IGetItemsByListIdParams) => {
   const chainsWithItems = await prisma.chain.findMany({
     where: {
       ...where,

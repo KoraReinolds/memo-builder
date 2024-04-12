@@ -35,7 +35,7 @@
       </UCheckbox>
       <UButton
         color="red"
-        @click="removeItem(item.id)"
+        @click="$emit('removeItem', item.id)"
         v-text="'Del'"
       />
     </div>
@@ -52,42 +52,27 @@
 </template>
 
 <script setup lang="ts">
-  import type { PropType } from 'vue'
-  import { useItemStore } from '~/adapters/items/useItemStore'
   import type { SelectedItemUI } from '~/adapters/items/useSelectedItems'
+  import type { IItem } from '~/core/items/types'
 
-  const props = defineProps({
-    name: {
-      type: String,
-      required: true,
-    },
-    selectedItems: {
-      type: Object as PropType<SelectedItemUI>,
-      required: true,
-    },
-    modelValue: {
-      type: Object as PropType<Record<string, boolean>>,
-      required: true,
-    },
-    listId: {
-      type: Number,
-      required: true,
-    },
-  })
+  const props = defineProps<{
+    name: string
+    selectedItems: SelectedItemUI
+    modelValue: Record<string, boolean>
+    listId: number
+    items: IItem[]
+  }>()
 
   const emits = defineEmits<{
     newItem: [name: string]
+    removeItem: [id: number]
     removeList: []
     selectItem: [id: number]
     'update:modelValue': [selected: Record<string, boolean>]
   }>()
 
-  const { items, createNewItem, removeItem, getItemsByListId } = useItemStore()
-
-  getItemsByListId(props.listId)
-
   const listItems = computed(() =>
-    items.filter(({ listId }) => listId === props.listId),
+    props.items.filter(({ listId }) => listId === props.listId),
   )
 
   const selected = computed({
@@ -106,7 +91,7 @@
   }
 
   const addNewItem = () => {
-    createNewItem(props.listId, newItem.value)
+    emits('newItem', newItem.value)
     newItem.value = ''
   }
 </script>

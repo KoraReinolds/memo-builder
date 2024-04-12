@@ -4,7 +4,7 @@
   <my-widget
     v-if="memoSettings"
     class="mx-auto flex max-w-lg items-center justify-center"
-    :items="itemsStore.items"
+    :items="items"
     :links="links"
     :config="memoSettings"
   ></my-widget>
@@ -19,10 +19,13 @@
       <ItemData
         v-model="newSelectedItems[itemList.id]"
         :name="itemList.name"
+        :items="items"
         :selected-items="selectedItems"
         :list-id="itemList.id"
         @remove-list="removeList(itemList.id)"
         @select-item="selectItem"
+        @new-item="createNewItem(itemList.id, $event)"
+        @remove-item="removeItem"
       />
     </div>
     <CreateNewList @new-list="createNewList" />
@@ -31,7 +34,6 @@
 
 <script setup lang="ts">
   import { Widget } from 'memo-widget'
-  import { useItemStore } from '~/adapters/items/useItemStore'
   import {
     useSelectedItems,
     type SelectedItemUI,
@@ -44,6 +46,7 @@
   import { getAllPairs } from '~/useCases/links/allPairs'
   import { db } from '~/local-storage/db'
   import { ItemsRepo } from '~/local-storage/repository/items'
+  import { useItem } from '~/adapters/items/useItem'
 
   if (!customElements.get('my-widget'))
     customElements.define('my-widget', Widget)
@@ -51,24 +54,24 @@
   const router = useRouter()
   const groupId = +router.currentRoute.value.params.id
 
-  const itemsStore = useItemStore()
-
   const repo = new ItemsRepo(db)
 
-  const items = computed(() => itemsStore.items)
+  const itemsIdMap = computed(() => toIdMap(items.value))
+
+  const { lists, createNewList, removeList } = useList(groupId)
+
+  const { links, getNewLinks, getRemovedLinks, createLinks, removeLinks } =
+    useRelation(groupId)
+
+  const { items, createNewItem, removeItem, getItemsByGroupId } = useItem()
+
+  items.value = (await getItemsByGroupId(groupId)) || []
 
   watch(
     () => items.value,
     () => repo.sync(groupId, items.value),
     { immediate: true },
   )
-
-  const itemsIdMap = computed(() => toIdMap(itemsStore.items))
-
-  const { lists, createNewList, removeList } = useList(groupId)
-
-  const { links, getNewLinks, getRemovedLinks, createLinks, removeLinks } =
-    useRelation(groupId)
 
   const memoSettings = computed<IMemoConfig | undefined>(() =>
     lists.value && lists.value.length > 1

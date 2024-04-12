@@ -1,7 +1,19 @@
 import type { IItem } from '~/core/items/types'
 
-export const useItemStore = defineStore('items', () => {
+export const useItem = () => {
   const items = ref<IItem[]>([])
+
+  const getItemsByGroupId = async (groupId: number) => {
+    const { data, error } = await useFetch(
+      `/api/items/by-group?groupId=${groupId}`,
+    )
+
+    if (error.value) {
+      console.warn(`${getItemsByGroupId.name} error`, error.value)
+    }
+
+    return data.value
+  }
 
   const getItemsByListId = async (listId: number) => {
     const { data, error } = await useFetch(
@@ -12,8 +24,7 @@ export const useItemStore = defineStore('items', () => {
       console.warn(`${getItemsByListId.name} error`, error.value)
     }
 
-    const newItems = (data.value || []).map((item) => ({ ...item, listId }))
-    newItems.forEach((item) => items.value.push(item))
+    return data.value
   }
 
   const addItem = (item: IItem | null) => {
@@ -53,9 +64,10 @@ export const useItemStore = defineStore('items', () => {
   return {
     items,
     getItemsByListId,
+    getItemsByGroupId,
     addItem,
     removeItemById,
     createNewItem,
     removeItem,
   }
-})
+}
